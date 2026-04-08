@@ -2,25 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Manrope is loaded via <link> in index.html */
+
 @layer base {
   :root {
-    --color-accent: #10b981;
-    --color-surface: #f8fafc;
-    --color-border: #e2e8f0;
+    --shadow-botanical: 0px 12px 32px rgba(29, 29, 0, 0.06);
+  }
+
+  html {
+    /* Smooth focus for keyboard users */
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 antialiased;
+    font-family: 'Manrope', system-ui, sans-serif;
+    background-color: #fffcca; /* surface */
+    color: #1d1d00;             /* on-surface */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  * {
-    box-sizing: border-box;
+  /* Skip-to-content link for keyboard/screen-reader users */
+  .skip-to-content {
+    @apply absolute -top-full left-4 z-[100] px-4 py-2 bg-primary text-on-primary text-sm font-bold rounded-xl;
+    @apply focus:top-4 transition-all;
+  }
+
+  /* Focus styles — visible ring for keyboard nav, suppressed for mouse */
+  :focus-visible {
+    outline: 2px solid #244a3e;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Number inputs — tabular lining for financial data scanning */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer components {
+  /* Glassmorphism nav */
+  .glass-nav {
+    background: rgba(255, 252, 202, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Botanical gradient (hero cards) */
+  .bg-botanical-gradient {
+    background: linear-gradient(135deg, #244a3e 0%, #3c6255 100%);
+  }
+
+  /* Label style from design doc */
+  .label-caps {
+    @apply text-[10px] font-extrabold uppercase tracking-[0.1em] text-on-surface-variant;
+  }
+
+  /* Growth chip — positive signal */
+  .chip-positive {
+    @apply bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1;
+  }
+
+  /* Growth chip — negative signal */
+  .chip-negative {
+    @apply bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1;
+  }
+
+  /* Input field — Botanical Ledger style */
+  .input-botanical {
+    @apply w-full bg-surface-container-highest border-0 border-b-2 border-transparent
+           focus:border-primary focus:ring-0
+           rounded-none px-3 py-2.5 font-bold text-primary text-sm
+           placeholder:text-on-surface-variant/40
+           transition-colors duration-150;
+  }
+
+  /* Thin custom scrollbar */
+  .scrollbar-botanical {
+    scrollbar-width: thin;
+    scrollbar-color: #e8e5af transparent;
+  }
+  .scrollbar-botanical::-webkit-scrollbar { width: 4px; }
+  .scrollbar-botanical::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-botanical::-webkit-scrollbar-thumb {
+    background: #e8e5af;
+    border-radius: 10px;
+  }
+
+  /* "Ghost border" for data tables only — 15% opacity per design doc */
+  .ghost-border {
+    border-color: rgba(193, 200, 195, 0.15);
   }
 }
 
 @layer utilities {
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out;
   }
 }

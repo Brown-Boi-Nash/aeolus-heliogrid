@@ -8,39 +8,31 @@ import GeographicMap from './tabs/GeographicMap/index.jsx'
 
 const TABS = [
   {
+    id: 'market',
     label: 'Market Overview',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
+    shortLabel: 'Market',
+    icon: 'analytics',
     component: MarketOverview,
   },
   {
+    id: 'economics',
     label: 'Project Economics',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    shortLabel: 'Economics',
+    icon: 'calculate',
     component: Calculator,
   },
   {
+    id: 'assistant',
     label: 'Research Assistant',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-      </svg>
-    ),
+    shortLabel: 'Research',
+    icon: 'auto_awesome',
     component: ResearchAssistant,
   },
   {
+    id: 'map',
     label: 'Geographic Map',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
-    ),
+    shortLabel: 'Map',
+    icon: 'map',
     component: GeographicMap,
   },
 ]
@@ -49,72 +41,145 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(0)
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-energy-500">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-base font-bold text-slate-900 leading-tight">
-                  U.S. Renewable Energy
-                </h1>
-                <p className="text-xs text-slate-500 leading-tight">Investment Dashboard</p>
-              </div>
-            </div>
-            <div className="text-xs text-slate-400">
-              Live data from EIA · NREL · Gemini AI
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-surface text-on-surface flex flex-col">
+      {/* Accessibility: skip to main content */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
 
-      {/* Tab Navigation */}
-      <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
-        <div className="bg-white border-b border-slate-200">
-          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tab.List className="flex gap-0 -mb-px">
-              {TABS.map((tab, idx) => (
+      {/* ── Glassmorphism Top Nav ──────────────────────────────────── */}
+      <header
+        className="glass-nav sticky top-0 z-50"
+        role="banner"
+      >
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
+          {/* Brand */}
+          <div className="flex items-center gap-3" aria-label="The Botanical Ledger">
+            <div
+              className="w-8 h-8 rounded-xl bg-botanical-gradient flex items-center justify-center"
+              aria-hidden="true"
+            >
+              <span className="material-symbols-outlined text-white text-lg"
+                style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}>
+                eco
+              </span>
+            </div>
+            <span className="text-lg font-extrabold tracking-tight text-primary">
+              The Botanical Ledger
+            </span>
+          </div>
+
+          {/* Desktop Tab Nav */}
+          <Tab.Group
+            as="nav"
+            selectedIndex={activeTab}
+            onChange={setActiveTab}
+            aria-label="Dashboard sections"
+            className="hidden md:flex items-center gap-6"
+          >
+            <Tab.List className="flex items-center gap-1">
+              {TABS.map((tab) => (
                 <Tab
-                  key={tab.label}
+                  key={tab.id}
                   className={({ selected }) =>
                     clsx(
-                      'flex items-center gap-2 px-4 py-3.5 text-sm font-medium border-b-2 transition-colors focus:outline-none whitespace-nowrap',
+                      'flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold uppercase tracking-widest transition-colors duration-200 rounded-lg',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                       selected
-                        ? 'border-energy-500 text-energy-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        ? 'text-primary border-b-2 border-primary rounded-none pb-1'
+                        : 'text-on-surface/60 hover:text-primary'
                     )
                   }
                 >
-                  {tab.icon}
+                  <span
+                    className="material-symbols-outlined text-base leading-none"
+                    aria-hidden="true"
+                    style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+                  >
+                    {tab.icon}
+                  </span>
                   {tab.label}
                 </Tab>
               ))}
             </Tab.List>
+
+            {/* Tab Panels — full width below nav */}
+            <Tab.Panels
+              as="main"
+              id="main-content"
+              className="hidden"
+              aria-live="polite"
+            />
+          </Tab.Group>
+
+          {/* Live data badge */}
+          <div
+            className="hidden lg:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
+            aria-label="Live market data indicator"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
+            Live Market Data
           </div>
         </div>
+      </header>
+
+      {/* ── Main Tab Shell ─────────────────────────────────────────── */}
+      <Tab.Group as="div" className="flex-1 flex flex-col" selectedIndex={activeTab} onChange={setActiveTab}>
+        {/* Mobile Tab Bar */}
+        <Tab.List
+          as="nav"
+          aria-label="Dashboard sections"
+          className="md:hidden flex border-b border-on-surface/5 bg-surface-container-low overflow-x-auto scrollbar-botanical"
+        >
+          {TABS.map((tab) => (
+            <Tab
+              key={tab.id}
+              className={({ selected }) =>
+                clsx(
+                  'flex-1 flex flex-col items-center gap-0.5 py-2.5 px-2 text-[9px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+                  selected
+                    ? 'text-primary border-b-2 border-primary'
+                    : 'text-on-surface/50 hover:text-primary'
+                )
+              }
+            >
+              <span
+                className="material-symbols-outlined text-lg"
+                aria-hidden="true"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+              >
+                {tab.icon}
+              </span>
+              {tab.shortLabel}
+            </Tab>
+          ))}
+        </Tab.List>
 
         {/* Tab Content */}
-        <main className="flex-1 max-w-screen-2xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Tab.Panels>
-            {TABS.map((tab) => (
-              <Tab.Panel key={tab.label} className="animate-fade-in">
-                <tab.component onNavigate={setActiveTab} />
-              </Tab.Panel>
-            ))}
-          </Tab.Panels>
-        </main>
+        <Tab.Panels as="main" id="main-content" className="flex-1" aria-live="polite">
+          {TABS.map((tab) => (
+            <Tab.Panel
+              key={tab.id}
+              className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in"
+              tabIndex={-1}
+            >
+              <tab.component onNavigate={setActiveTab} />
+            </Tab.Panel>
+          ))}
+        </Tab.Panels>
       </Tab.Group>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-3">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
-          Data sources: EIA Open Data API · NREL Developer API · Google Gemini AI
+      {/* ── Footer ─────────────────────────────────────────────────── */}
+      <footer
+        className="bg-surface-container-high py-3"
+        role="contentinfo"
+        aria-label="Data attribution"
+      >
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 text-center">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/40">
+            Data: EIA Open Data API · NREL Developer API · Google Gemini AI · Mapbox
+          </p>
         </div>
       </footer>
     </div>

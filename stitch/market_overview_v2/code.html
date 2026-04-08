@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Botanical Ledger | Market Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#406659",
+                        "secondary-fixed": "#c3eccf",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1d1d00",
+                        "on-tertiary-container": "#c4daaa",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fffcca",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#a8d0b4",
+                        "tertiary-fixed-dim": "#b8ce9e",
+                        "on-secondary-fixed": "#002110",
+                        "inverse-on-surface": "#f6f3bc",
+                        "surface-bright": "#fffcca",
+                        "on-secondary-fixed-variant": "#2a4e38",
+                        "surface-container": "#f4f0ba",
+                        "on-primary": "#ffffff",
+                        "background": "#fffcca",
+                        "on-surface": "#1d1d00",
+                        "inverse-primary": "#a6cfbf",
+                        "on-tertiary-fixed-variant": "#3a4c28",
+                        "secondary": "#41664f",
+                        "on-primary-container": "#b2dccb",
+                        "surface-variant": "#e8e5af",
+                        "surface-dim": "#dfdda7",
+                        "outline": "#717975",
+                        "surface-container-low": "#f9f6bf",
+                        "primary-fixed-dim": "#a6cfbf",
+                        "primary-container": "#3c6255",
+                        "tertiary": "#374824",
+                        "primary": "#244a3e",
+                        "surface-container-high": "#eeebb4",
+                        "outline-variant": "#c1c8c3",
+                        "on-secondary-container": "#466b53",
+                        "surface-container-highest": "#e8e5af",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#002118",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#c2ecdb",
+                        "on-primary-fixed-variant": "#284e41",
+                        "secondary-container": "#c0eacc",
+                        "tertiary-fixed": "#d4eab9",
+                        "inverse-surface": "#33320c",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#414845",
+                        "tertiary-container": "#4e603a",
+                        "on-tertiary-fixed": "#102002"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-botanical-gradient {
+            background: linear-gradient(135deg, #244a3e 0%, #3c6255 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-[#fffcca]/70 backdrop-blur-md sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#244a3e]">The Botanical Ledger</span>
+<nav class="hidden md:flex space-x-6">
+<a class="text-[#244a3e] border-b-2 border-[#244a3e] font-bold pb-1 text-xs uppercase tracking-widest" href="#">Market Overview</a>
+<a class="text-[#1d1d00]/60 font-medium hover:text-[#244a3e] transition-colors duration-200 text-xs uppercase tracking-widest" href="#">Project Economics</a>
+<a class="text-[#1d1d00]/60 font-medium hover:text-[#244a3e] transition-colors duration-200 text-xs uppercase tracking-widest" href="#">Research Assistant</a>
+<a class="text-[#1d1d00]/60 font-medium hover:text-[#244a3e] transition-colors duration-200 text-xs uppercase tracking-widest" href="#">Geographic Map</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:scale-95 transition-transform duration-150">
+                    Analyze with AI
+                </button>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-[#244a3e] cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-[#244a3e] cursor-pointer">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-72px)] w-64 fixed left-0 top-[72px] z-40 bg-[#eeebb4] p-4 space-y-6">
+<div class="px-2">
+<h2 class="text-lg font-black text-[#1d1d00]">Investment Hub</h2>
+<p class="text-xs text-[#1d1d00]/60 font-medium">Renewable Assets</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">analytics</span> Portfolio Deep-Dive
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">query_stats</span> Yield Modeling
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">eco</span> ESG Reporting
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">cloud_done</span> Carbon Credits
+                </a>
+</nav>
+<button class="bg-primary text-on-primary w-full py-3 rounded-lg text-sm font-bold shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span> Add New Project
+            </button>
+<div class="pt-4 border-t border-[#1d1d00]/10 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 hover:bg-[#f9f6bf]/50 transition-all duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined">help_outline</span> Support
+                </a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 lg:ml-64 p-8 bg-surface">
+<div class="max-w-[1200px] mx-auto space-y-8">
+<!-- Hero Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tight">Market Overview</h1>
+<p class="text-on-surface-variant font-medium mt-1">U.S. Renewable Energy Sector Analysis • Q3 2024</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Live Market Data</span>
+</div>
+</div>
+</section>
+<!-- Key Metrics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- National Avg Electricity Price -->
+<div class="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden flex flex-col justify-between">
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">National Avg Price</p>
+<h3 class="text-4xl font-extrabold text-primary">$0.164 <span class="text-sm font-normal text-on-surface-variant">/ kWh</span></h3>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +4.2% YoY
+                            </span>
+<span class="text-xs text-on-surface-variant italic">vs prev. quarter</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-9xl">bolt</span>
+</div>
+</div>
+<!-- Installed Capacity -->
+<div class="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden flex flex-col justify-between">
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Installed Capacity</p>
+<h3 class="text-4xl font-extrabold text-primary">284 <span class="text-sm font-normal text-on-surface-variant">GW</span></h3>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12.8% YoY
+                            </span>
+<span class="text-xs text-on-surface-variant italic">+32GW new</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-9xl">wind_power</span>
+</div>
+</div>
+<!-- Clean Energy Share -->
+<div class="bg-botanical-gradient p-6 rounded-xl text-on-primary flex flex-col justify-between">
+<div class="space-y-1">
+<p class="text-xs font-bold uppercase tracking-widest opacity-80">Clean Energy Share</p>
+<h3 class="text-5xl font-black italic">24.6%</h3>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<p class="text-xs font-medium opacity-90">Total U.S. Power Generation</p>
+<span class="material-symbols-outlined">nature_people</span>
+</div>
+</div>
+</section>
+<!-- Data Visualizations -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Price Trend Chart (Mock) -->
+<div class="bg-surface-container-low p-8 rounded-xl space-y-6">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-lg font-bold text-on-surface">Electricity Price Trends</h4>
+<p class="text-xs font-medium text-on-surface-variant">Avg residential pricing over 12 months</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">more_horiz</span>
+</div>
+<div class="h-48 flex items-end justify-between gap-1 relative pt-8">
+<!-- Simple Line Path Simulation -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible" preserveaspectratio="none">
+<path d="M0,80 Q50,70 100,90 T200,60 T300,50 T400,30 T500,40" fill="none" stroke="#244a3e" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<!-- Data Labels -->
+<div class="w-full flex justify-between absolute -bottom-6">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Oct</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Jan</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Apr</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Jul</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Sep</span>
+</div>
+</div>
+</div>
+<!-- Capacity Growth Chart (Mock) -->
+<div class="bg-surface-container-low p-8 rounded-xl space-y-6">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-lg font-bold text-on-surface">Capacity Growth by Source</h4>
+<p class="text-xs font-medium text-on-surface-variant">Annual additions in GW (2020-2024)</p>
+</div>
+<div class="flex gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary opacity-50"></span>
+</div>
+</div>
+<div class="h-48 flex items-end justify-between px-4">
+<div class="w-8 bg-primary rounded-t opacity-40 h-[40%]"></div>
+<div class="w-8 bg-primary rounded-t opacity-50 h-[55%]"></div>
+<div class="w-8 bg-primary rounded-t opacity-70 h-[65%]"></div>
+<div class="w-8 bg-primary rounded-t opacity-85 h-[85%]"></div>
+<div class="w-8 bg-primary rounded-t h-[100%] relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary">+12%</div>
+</div>
+</div>
+<div class="flex justify-between px-4 pt-2">
+<span class="text-[10px] font-bold text-on-surface-variant">2020</span>
+<span class="text-[10px] font-bold text-on-surface-variant">2021</span>
+<span class="text-[10px] font-bold text-on-surface-variant">2022</span>
+<span class="text-[10px] font-bold text-on-surface-variant">2023</span>
+<span class="text-[10px] font-bold text-on-surface-variant">2024</span>
+</div>
+</div>
+</section>
+<!-- High-Density Data Table (Regional Breakdown) -->
+<section class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="p-6 border-b border-on-surface/5 flex justify-between items-center">
+<h4 class="text-lg font-bold text-on-surface">Regional Market Performance</h4>
+<button class="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-1">
+                            Export Report <span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-high">
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Region</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Avg Price ($/kWh)</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Capacity (GW)</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">YoY Change</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Project Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-on-surface/5">
+<tr class="bg-surface hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-bold text-sm">Northeast</td>
+<td class="px-6 py-4 font-mono text-sm">0.224</td>
+<td class="px-6 py-4 font-mono text-sm">42.5</td>
+<td class="px-6 py-4">
+<span class="text-tertiary-container font-bold text-xs">+3.2%</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-primary"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant">Optimal</span>
+</div>
+</td>
+</tr>
+<tr class="bg-surface-container-low hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-bold text-sm">Midwest</td>
+<td class="px-6 py-4 font-mono text-sm">0.142</td>
+<td class="px-6 py-4 font-mono text-sm">88.2</td>
+<td class="px-6 py-4">
+<span class="text-tertiary-container font-bold text-xs">+14.5%</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[92%] h-full bg-primary"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant">High Yield</span>
+</div>
+</td>
+</tr>
+<tr class="bg-surface hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-bold text-sm">Southwest</td>
+<td class="px-6 py-4 font-mono text-sm">0.185</td>
+<td class="px-6 py-4 font-mono text-sm">76.1</td>
+<td class="px-6 py-4">
+<span class="text-tertiary-container font-bold text-xs">+8.7%</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[60%] h-full bg-primary"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant">Growing</span>
+</div>
+</td>
+</tr>
+<tr class="bg-surface-container-low hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-bold text-sm">Pacific Coast</td>
+<td class="px-6 py-4 font-mono text-sm">0.248</td>
+<td class="px-6 py-4 font-mono text-sm">77.2</td>
+<td class="px-6 py-4">
+<span class="text-error font-bold text-xs">-1.4%</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[45%] h-full bg-primary"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant">Limited</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Informational Insights Card -->
+<section class="bg-surface-container-highest p-8 rounded-xl border-l-4 border-primary flex flex-col md:flex-row items-center gap-8">
+<div class="w-full md:w-1/3 aspect-video rounded-lg overflow-hidden relative">
+<img alt="Renewable Energy Landscape" class="w-full h-full object-cover" data-alt="Modern wind turbines standing tall in a lush green meadow at sunrise with golden morning mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoh7ToUmFMGNNkfnyPO1VAkCacldzvapivn20HHAtSn4z2vJhwsUeRLwzncPhDy7D3OEmSNf2MpcMMkNKEb673Rv2PVlk4u1VHkyzlbtACPwbGdnqatysgfGrFkQyhlH2v0PM8dD_GEtm7uYUY4MB8Klc-bcnqqrMM8fHP68XGlOAtGy-aupR1nq86TsKNWN6wxRjkk7pEIHq8vAsG6-cowSKufn7iDrD49XLcsP949qtjq5UOqM3WGZArMFEiEv4IIIdvPcpBLi3r"/>
+</div>
+<div class="flex-1 space-y-4">
+<div class="space-y-1">
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Strategic Insight</span>
+<h3 class="text-2xl font-extrabold text-on-surface">The Rise of Battery Storage Systems</h3>
+</div>
+<p class="text-sm leading-relaxed text-on-surface-variant">
+                            Current trends indicate that 2024 will see a record integration of utility-scale battery storage, projected to grow by 45%. This shift is stabilizing peak-hour pricing in historically volatile regions like Texas and California, creating new arbitrage opportunities for renewable asset owners.
+                        </p>
+<button class="text-primary font-bold text-sm underline underline-offset-4 hover:opacity-80 transition-opacity">
+                            Read the full Q3 Economic Report
+                        </button>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Shell (Suppressed based on logic but added for completeness if md screen) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#fffcca]/90 backdrop-blur-md flex justify-around items-center py-3 px-4 z-50">
+<button class="flex flex-col items-center gap-1 text-[#244a3e]">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Market</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#1d1d00]/60">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Deep-Dive</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#1d1d00]/60">
+<span class="material-symbols-outlined">eco</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">ESG</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#1d1d00]/60">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Settings</span>
+</button>
+</nav>
+</body></html>

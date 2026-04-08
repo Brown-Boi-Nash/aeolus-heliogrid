@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#406659",
+                        "secondary-fixed": "#c3eccf",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1d1d00",
+                        "on-tertiary-container": "#c4daaa",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fffcca",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#a8d0b4",
+                        "tertiary-fixed-dim": "#b8ce9e",
+                        "on-secondary-fixed": "#002110",
+                        "inverse-on-surface": "#f6f3bc",
+                        "surface-bright": "#fffcca",
+                        "on-secondary-fixed-variant": "#2a4e38",
+                        "surface-container": "#f4f0ba",
+                        "on-primary": "#ffffff",
+                        "background": "#fffcca",
+                        "on-surface": "#1d1d00",
+                        "inverse-primary": "#a6cfbf",
+                        "on-tertiary-fixed-variant": "#3a4c28",
+                        "secondary": "#41664f",
+                        "on-primary-container": "#b2dccb",
+                        "surface-variant": "#e8e5af",
+                        "surface-dim": "#dfdda7",
+                        "outline": "#717975",
+                        "surface-container-low": "#f9f6bf",
+                        "primary-fixed-dim": "#a6cfbf",
+                        "primary-container": "#3c6255",
+                        "tertiary": "#374824",
+                        "primary": "#244a3e",
+                        "surface-container-high": "#eeebb4",
+                        "outline-variant": "#c1c8c3",
+                        "on-secondary-container": "#466b53",
+                        "surface-container-highest": "#e8e5af",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#002118",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#c2ecdb",
+                        "on-primary-fixed-variant": "#284e41",
+                        "secondary-container": "#c0eacc",
+                        "tertiary-fixed": "#d4eab9",
+                        "inverse-surface": "#33320c",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#414845",
+                        "tertiary-container": "#4e603a",
+                        "on-tertiary-fixed": "#102002"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e8e5af; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="bg-[#eeebb4] dark:bg-stone-800 text-[#244a3e] dark:text-[#c0eacc] h-screen w-64 fixed left-0 top-0 z-40 flex flex-col h-full p-4 space-y-6">
+<div class="flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">eco</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-[#1d1d00] leading-none">The Botanical Ledger</h1>
+<p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Investment Hub</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 dark:text-stone-400 hover:bg-[#f9f6bf]/50 transition-all duration-200 font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Portfolio Deep-Dive
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 dark:text-stone-400 hover:bg-[#f9f6bf]/50 transition-all duration-200 font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+                Yield Modeling
+            </a>
+<a class="bg-[#fffcca] text-[#244a3e] rounded-lg font-bold shadow-sm flex items-center gap-3 px-3 py-2 translate-x-1 transition-transform font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+                Research Assistant
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 dark:text-stone-400 hover:bg-[#f9f6bf]/50 transition-all duration-200 font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="cloud_done">cloud_done</span>
+                Carbon Credits
+            </a>
+</nav>
+<div class="pt-4 border-t border-[#1d1d00]/10">
+<button class="w-full bg-primary text-on-primary py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+                Add New Project
+            </button>
+</div>
+<div class="space-y-1 pt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 dark:text-stone-400 hover:bg-[#f9f6bf]/50 transition-all duration-200 font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#1d1d00]/70 dark:text-stone-400 hover:bg-[#f9f6bf]/50 transition-all duration-200 font-manrope font-medium text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-[#fffcca]/70 dark:bg-stone-900/70 backdrop-blur-md sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#244a3e] dark:text-[#c0eacc]">Research Assistant</span>
+<nav class="hidden lg:flex gap-6">
+<a class="text-[#1d1d00]/60 dark:text-stone-400 font-medium uppercase tracking-widest text-xs hover:text-[#244a3e] transition-colors duration-200" href="#">Market Overview</a>
+<a class="text-[#1d1d00]/60 dark:text-stone-400 font-medium uppercase tracking-widest text-xs hover:text-[#244a3e] transition-colors duration-200" href="#">Project Economics</a>
+<a class="text-[#244a3e] border-b-2 border-[#244a3e] font-bold pb-1 uppercase tracking-widest text-xs" href="#">Research Assistant</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#244a3e]/60 cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-[#244a3e]/60 cursor-pointer" data-icon="account_circle">account_circle</span>
+<button class="bg-primary-container text-[#fffcca] px-4 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">bolt</span>
+                        Analyze with AI
+                    </button>
+</div>
+</div>
+</header>
+<!-- Chat Canvas Split Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Context Sidebar (Right side, editorial style) -->
+<aside class="w-80 bg-surface-container-high p-6 flex flex-col gap-8 order-2 overflow-y-auto custom-scrollbar">
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60 mb-4">Active Context Feed</h3>
+<div class="space-y-3">
+<div class="p-4 bg-surface-container-lowest rounded-xl border-l-4 border-primary shadow-sm">
+<p class="text-xs font-bold text-primary mb-1">Portfolio: Amazon Reforestation</p>
+<p class="text-sm leading-relaxed text-on-surface/80 italic">Currently analyzing YTD yield vs carbon absorption targets.</p>
+</div>
+<div class="p-4 bg-surface-container-lowest rounded-xl shadow-sm">
+<p class="text-xs font-bold text-tertiary mb-1">Market Signal: Carbon Price</p>
+<div class="flex items-end gap-2">
+<span class="text-xl font-extrabold tracking-tight">$84.20</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-1.5 py-0.5 rounded text-[10px] font-bold mb-1">+4.2%</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60 mb-4">Suggested Questions</h3>
+<div class="flex flex-col gap-2">
+<button class="text-left p-3 text-sm rounded-lg bg-surface hover:bg-surface-container-low transition-colors duration-200 border-b border-[#1d1d00]/5 text-on-surface/80">
+                            "What is the projected ESG score for Q4?"
+                        </button>
+<button class="text-left p-3 text-sm rounded-lg bg-surface hover:bg-surface-container-low transition-colors duration-200 border-b border-[#1d1d00]/5 text-on-surface/80">
+                            "Explain the impact of new EU biodiversity regulations."
+                        </button>
+<button class="text-left p-3 text-sm rounded-lg bg-surface hover:bg-surface-container-low transition-colors duration-200 border-b border-[#1d1d00]/5 text-on-surface/80">
+                            "Compare solar farm yields in Spain vs Morocco."
+                        </button>
+</div>
+</div>
+<div class="mt-auto">
+<div class="rounded-xl overflow-hidden relative group">
+<img class="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-110" data-alt="misty mountain peak in the distance with lush green forest in the foreground under a dramatic overcast sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu83BRHS05_hBN844FRWi_mKuFlTWv17BwDzB6iF6NaBN1EhsaqiZ857rN6LoGMGGr7O4_Ci_ZUUAfi3GeOhdcGf2A_ossS1_38NSfS4cSdCQtgSJNfTFwaOicQHWMGhADTO1wma6gNatXuEZb9McMh91Tj1H5sAy-aPfM1COCPUGJm2x5ViJUvg72OEWmUfMcqj5r2Ba50W5w948YxSCocguUV1eq9IS_T4uMNXKf2Hzcdc1Uap0gNtHwUyOI66xb7gpQLj9zOo66"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex items-end p-3">
+<p class="text-[10px] font-bold text-white uppercase tracking-wider">Research Archive 2024</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Chat Interface -->
+<section class="flex-1 flex flex-col bg-surface-container-low relative order-1">
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+<!-- Assistant Message -->
+<div class="flex gap-4 max-w-3xl">
+<div class="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-6 rounded-2xl rounded-tl-none shadow-sm">
+<p class="text-sm leading-relaxed mb-4">
+                                    Good morning. I've finished the deep-dive analysis on the <span class="font-bold text-primary">Nordic Wind Portfolio</span>. Based on current weather patterns and energy grid demands, we're seeing a 12% surplus in potential output for October.
+                                </p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-xl">
+<p class="text-[10px] uppercase tracking-widest text-on-surface/60 font-bold mb-1">Projected ROI</p>
+<p class="text-2xl font-black text-primary tracking-tight">8.4%</p>
+</div>
+<div class="bg-surface-container p-4 rounded-xl">
+<p class="text-[10px] uppercase tracking-widest text-on-surface/60 font-bold mb-1">Carbon Offset</p>
+<p class="text-2xl font-black text-primary tracking-tight">12.2k <span class="text-xs font-normal opacity-60">tn</span></p>
+</div>
+</div>
+</div>
+<span class="text-[10px] font-bold text-on-surface/40 uppercase tracking-widest">Assistant • 09:12 AM</span>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-4 max-w-3xl ml-auto flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-secondary flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="flex flex-col items-end space-y-2">
+<div class="bg-primary text-white p-5 rounded-2xl rounded-tr-none shadow-md">
+<p class="text-sm leading-relaxed">
+                                    That's impressive. How does this compare to the Iberian Peninsula solar assets in the same timeframe? Can we rebalance the portfolio to prioritize the wind surplus?
+                                </p>
+</div>
+<span class="text-[10px] font-bold text-on-surface/40 uppercase tracking-widest">You • 09:14 AM</span>
+</div>
+</div>
+<!-- Assistant Typing/Thinking -->
+<div class="flex gap-4 max-w-3xl">
+<div class="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center opacity-50 animate-pulse">
+<span class="material-symbols-outlined text-white text-lg">auto_awesome</span>
+</div>
+<div class="bg-surface-container-highest/30 px-6 py-4 rounded-2xl rounded-tl-none italic text-xs text-on-surface/60">
+                            Analyzing Iberian solar irradiation datasets...
+                        </div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-8 pt-0">
+<div class="max-w-4xl mx-auto">
+<div class="relative bg-surface-container-lowest rounded-2xl p-2 shadow-xl shadow-on-surface/5 group transition-all duration-300 focus-within:ring-2 ring-primary/20">
+<div class="flex items-end gap-2">
+<button class="p-2 text-on-surface/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none custom-scrollbar max-h-32 min-h-[44px]" placeholder="Inquire about your portfolio's ecological footprint or fiscal performance..." rows="1"></textarea>
+<button class="bg-primary hover:bg-primary-container text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">send</span>
+</button>
+</div>
+<!-- Token Usage indicator -->
+<div class="flex justify-between items-center px-3 pt-2 mt-2 border-t border-[#1d1d00]/5">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-[10px] font-bold text-on-tertiary-fixed tracking-wide uppercase">Institutional Model</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-[10px] font-bold text-on-surface/60 tracking-wide uppercase">Context: 24.2k Tokens</span>
+</div>
+<span class="text-[10px] font-bold text-on-surface/30 uppercase tracking-widest">Shift + Enter for new line</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Contextual FAB (Hidden on this transactional/focused screen per instructions) -->
+<!-- Suppression Logic Applied -->
+</body></html>
