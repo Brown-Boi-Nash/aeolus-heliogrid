@@ -72,9 +72,10 @@ export default function ResearchAssistant() {
       const citations    = extractCitations(responseText)
       addMessage({ role: 'assistant', text: responseText, citations, timestamp: Date.now() })
     } catch (err) {
+      console.error('Gemini error:', err)
       addMessage({
         role: 'assistant',
-        text: 'Unable to reach Gemini AI. Please check your API key in `.env.local` and try again.',
+        text: `Unable to reach Gemini AI. Error: ${err?.message ?? 'Unknown error'}. Check your API key in \`.env.local\`.`,
         citations: [],
         timestamp: Date.now(),
       })
@@ -110,7 +111,7 @@ export default function ResearchAssistant() {
               </div>
               <div>
                 <h1 className="font-bold text-on-surface text-sm">Research Assistant</h1>
-                <p className="label-caps opacity-60">Powered by Gemini 1.5 Flash · Live data context</p>
+                <p className="label-caps opacity-60">Powered by Gemini 2.5 Flash Lite · Live data context</p>
               </div>
             </div>
             {chatMessages.length > 0 && (
@@ -200,7 +201,7 @@ export default function ResearchAssistant() {
               </div>
               <div className="flex justify-between items-center px-2 pt-1.5 mt-1 border-t border-on-surface/5">
                 <span className="chip-positive bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                  Gemini 1.5 Flash
+                  Gemini 2.5 Flash Lite
                 </span>
                 <span className="text-[9px] font-bold text-on-surface/30 uppercase tracking-widest">
                   Shift+Enter for new line

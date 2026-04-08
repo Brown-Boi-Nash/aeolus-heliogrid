@@ -19,9 +19,9 @@
 - **react-map-gl + Mapbox GL JS:** For high-performance vector choropleth geographic visualizations.
 - **mathjs:** To handle complex financial calculations, specifically the Newton-Raphson solver needed for accurate IRR edge cases.
 
-**AI Provider:** Google Gemini (`gemini-1.5-flash`) via `@google/generative-ai` SDK
+**AI Provider:** Google Gemini (`gemini-2.5-flash-lite`) via `@google/generative-ai` SDK
 
-> I chose Gemini Flash for its free tier (no billing required), extremely low latency, and straightforward SDK. Live EIA and NREL metrics plus the user's current calculator state (IRR, NPV, LCOE, selected state) are injected into the system prompt on every request, grounding the AI's answers in real data rather than general knowledge.
+> I chose Gemini Flash Lite for its free tier (no billing required), extremely low latency, and straightforward SDK. Live EIA and NREL metrics plus the user's current calculator state (IRR, NPV, LCOE, selected state) are injected into the system prompt on every request, grounding the AI's answers in real data rather than general knowledge.
 
 ---
 

@@ -3,12 +3,10 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 /**
- * Send a message to Gemini 1.5 Flash with a grounded system prompt
+ * Send a message to Gemini 2.5 Flash Lite with a grounded system prompt
  * that includes live dashboard context (EIA metrics, calculator state).
  */
 export async function sendGeminiMessage(userMessage, context = {}) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-
   const {
     nationalElectricityPrice,
     totalSolarCapacityGW,
@@ -45,13 +43,18 @@ GUIDELINES:
 - Format key figures in **bold**
 - Keep responses under 250 words unless the question demands more detail`
 
+  // systemInstruction must be passed to getGenerativeModel(), not startChat()
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.5-flash-lite',
+    systemInstruction: systemPrompt,
+  })
+
   const chat = model.startChat({
     history: [],
     generationConfig: {
       maxOutputTokens: 512,
       temperature: 0.4,
     },
-    systemInstruction: systemPrompt,
   })
 
   const result = await chat.sendMessage(userMessage)
