@@ -15,7 +15,7 @@ export async function fetchNationalElectricityPrice() {
   const url = buildUrl('/electricity/retail-sales/data/', {
     'frequency': 'monthly',
     'data[0]': 'price',
-    'facets[sectorName][]': 'all sectors',
+    'facets[sectorid][]': 'ALL',
     'facets[stateid][]': 'US',
     'sort[0][column]': 'period',
     'sort[0][direction]': 'desc',
@@ -49,7 +49,7 @@ export async function fetchStatePrices() {
   const url = buildUrl('/electricity/retail-sales/data/', {
     'frequency': 'annual',
     'data[0]': 'price',
-    'facets[sectorName][]': 'all sectors',
+    'facets[sectorid][]': 'ALL',
     'sort[0][column]': 'period',
     'sort[0][direction]': 'desc',
     'length': '60',
