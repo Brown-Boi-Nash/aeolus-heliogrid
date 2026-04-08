@@ -27,13 +27,14 @@ export async function fetchNationalElectricityPrice() {
   return json?.response?.data ?? []
 }
 
-// Annual solar utility-scale installed capacity for last 10 years
+// Annual U.S. installed solar capacity (net summer capability, MW) for last 10 years
 export async function fetchSolarCapacityTrend() {
-  const url = buildUrl('/electricity/electric-power-operational-data/data/', {
+  const url = buildUrl('/electricity/state-electricity-profiles/capability/data/', {
     'frequency': 'annual',
-    'data[0]': 'capacity',
-    'facets[fueltypeid][]': 'SUN',
-    'facets[location][]': 'US',
+    'data[0]': 'capability',
+    'facets[stateId][]': 'US',
+    'facets[energysourceid][]': 'SOL',
+    'facets[producertypeid][]': 'TOT',
     'sort[0][column]': 'period',
     'sort[0][direction]': 'desc',
     'length': '10',
@@ -52,7 +53,7 @@ export async function fetchStatePrices() {
     'facets[sectorid][]': 'ALL',
     'sort[0][column]': 'period',
     'sort[0][direction]': 'desc',
-    'length': '60',
+    'length': '200',
   })
   const res = await fetch(url)
   if (!res.ok) throw new Error(`EIA state prices fetch failed: ${res.status}`)

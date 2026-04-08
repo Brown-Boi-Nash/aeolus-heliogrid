@@ -22,7 +22,11 @@ export function normalizeCapacitySeries(rows) {
   return rows
     .map((row) => ({
       year: String(row.period),
-      capacityGW: row.capacity != null ? parseFloat(row.capacity) / 1000 : null, // MW → GW
+      capacityGW: row.capability != null
+        ? parseFloat(row.capability) / 1000
+        : row.capacity != null
+          ? parseFloat(row.capacity) / 1000
+          : null, // MW → GW
     }))
     .filter((r) => r.capacityGW != null)
     .sort((a, b) => a.year.localeCompare(b.year))
@@ -32,7 +36,7 @@ export function normalizeCapacitySeries(rows) {
 export function extractTotalCapacity(rows) {
   if (!rows.length) return null
   const sorted = [...rows].sort((a, b) => b.period - a.period)
-  const val = parseFloat(sorted[0].capacity)
+  const val = parseFloat(sorted[0].capability ?? sorted[0].capacity)
   return isNaN(val) ? null : val / 1000
 }
 

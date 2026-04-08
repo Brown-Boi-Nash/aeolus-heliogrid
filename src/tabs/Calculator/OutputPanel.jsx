@@ -1,6 +1,7 @@
 import clsx from 'clsx'
+import InfoHint from '../../components/ui/InfoHint'
 
-function KpiCard({ label, value, unit, sub, icon, status }) {
+function KpiCard({ label, info, value, unit, sub, icon, status }) {
   // status: 'good' | 'warn' | 'bad' | 'neutral'
   const statusColor = {
     good:    'text-primary',
@@ -16,7 +17,10 @@ function KpiCard({ label, value, unit, sub, icon, status }) {
       aria-label={label}
     >
       <div className="flex items-start justify-between">
-        <span className="label-caps">{label}</span>
+        <span className="label-caps flex items-center gap-1.5">
+          {label}
+          <InfoHint text={info} label={`${label} info`} />
+        </span>
         {icon && (
           <span
             className="material-symbols-outlined text-on-surface-variant text-lg"
@@ -75,6 +79,7 @@ export default function OutputPanel({ results, inputs }) {
 
       <KpiCard
         label="Internal Rate of Return"
+        info="Discount rate that makes project NPV equal zero. Higher IRR generally indicates stronger returns."
         value={irrPct}
         unit="%"
         sub={irr != null
@@ -85,6 +90,7 @@ export default function OutputPanel({ results, inputs }) {
       />
       <KpiCard
         label="Net Present Value"
+        info="Present value of future cash flows minus upfront equity outflow, discounted by your selected discount rate."
         value={npvM != null ? `$${npvM}M` : null}
         unit=""
         sub={`Discounted @ ${((inputs.discountRate ?? 0.08) * 100).toFixed(1)}% · Capex $${capexM}M`}
@@ -93,6 +99,7 @@ export default function OutputPanel({ results, inputs }) {
       />
       <KpiCard
         label="Levelized Cost of Energy"
+        info="Discounted lifetime cost divided by discounted lifetime energy output, expressed as dollars per kWh."
         value={lcoeVal != null ? `$${lcoeVal}` : null}
         unit="/ kWh"
         sub={lcoe != null
@@ -103,6 +110,7 @@ export default function OutputPanel({ results, inputs }) {
       />
       <KpiCard
         label="Simple Payback Period"
+        info="Years required for cumulative project cash inflows to recover initial equity investment."
         value={payYears}
         unit="yrs"
         sub={payback != null

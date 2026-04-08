@@ -1,12 +1,8 @@
 import MapContainer from './MapContainer'
 import { useEiaData } from '../../hooks/useEiaData'
-import useDashboardStore from '../../store/dashboardStore'
-import DataProvenance from '../../components/ui/DataProvenance'
 
 export default function GeographicMap({ onNavigate }) {
-  // Ensure EIA state prices are loaded (shared hook — deduped by SWR)
   useEiaData()
-  const marketLastFetched = useDashboardStore((s) => s.marketLastFetched)
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -27,72 +23,20 @@ export default function GeographicMap({ onNavigate }) {
             U.S. solar irradiance by state · Click a state to analyze
           </p>
         </div>
-        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-on-surface/40">
-          <span>Source: NREL NSRDB · EIA State Prices</span>
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/40">
+          <span className="material-symbols-outlined text-sm" aria-hidden="true"
+            style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>info</span>
+          <span>GHI: NREL NSRDB · Rates: EIA · Capacity Factor: NREL PVWatts v8</span>
         </div>
       </section>
 
       {/* ── Map ───────────────────────────────────────────────────── */}
       <div
         className="rounded-xl overflow-hidden shadow-botanical"
-        style={{ height: 'clamp(380px, 55vh, 520px)' }}
+        style={{ height: 'clamp(480px, 68vh, 680px)' }}
       >
         <MapContainer onNavigate={onNavigate} />
       </div>
-
-      <DataProvenance
-        title="Geospatial Data Provenance"
-        fetchedAt={marketLastFetched}
-        items={[
-          { label: 'State Geometry', source: 'US Census TIGER GeoJSON', note: 'Bundled static geometry in assets' },
-          { label: 'Solar Irradiance (GHI)', source: 'NREL NSRDB (pre-bundled by state)', note: 'Used for choropleth shading' },
-          { label: 'Capacity Factor', source: 'NREL PVWatts v8 API', note: 'Queried live for clicked state lat/lon' },
-          { label: 'Electricity Rates', source: 'EIA Open Data API', note: 'Mapped by state abbreviation' },
-        ]}
-      />
-
-      {/* ── How to Use ────────────────────────────────────────────── */}
-      <section
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-        aria-label="Map instructions"
-      >
-        {[
-          {
-            icon: 'touch_app',
-            title: 'Click a State',
-            body: 'Select any U.S. state to see its solar irradiance (GHI), current retail electricity rate from EIA, and an estimated capacity factor from NREL PVWatts.',
-          },
-          {
-            icon: 'calculate',
-            title: 'Apply to Calculator',
-            body: 'Hit "Use in Calculator" in the popup to auto-fill capacity factor and electricity rate in the Project Economics tab — cross-tab data flow.',
-          },
-          {
-            icon: 'palette',
-            title: 'Read the Choropleth',
-            body: 'Color intensity maps Global Horizontal Irradiance (GHI). Darker green = stronger solar resource. Southwest states consistently lead the U.S.',
-          },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="bg-surface-container-low rounded-xl p-5 flex gap-4"
-          >
-            <div className="w-10 h-10 rounded-xl bg-botanical-gradient flex items-center justify-center flex-shrink-0">
-              <span
-                className="material-symbols-outlined text-white text-lg"
-                aria-hidden="true"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                {item.icon}
-              </span>
-            </div>
-            <div>
-              <h3 className="font-bold text-on-surface text-sm mb-1">{item.title}</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">{item.body}</p>
-            </div>
-          </div>
-        ))}
-      </section>
 
     </div>
   )

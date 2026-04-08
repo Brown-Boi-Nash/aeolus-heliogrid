@@ -1,8 +1,34 @@
+import { useMemo } from 'react'
 import { useEiaData } from '../../hooks/useEiaData'
 import useDashboardStore from '../../store/dashboardStore'
 import MetricCard from '../../components/ui/MetricCard'
 import CapacityTrendChart from './CapacityTrendChart'
-import DataProvenance from '../../components/ui/DataProvenance'
+import { STATE_METADATA } from '../../constants/stateMetadata'
+
+// Region definitions — state abbreviations grouped geographically
+const REGIONS = {
+  Northeast: ['ME','NH','VT','MA','RI','CT','NY','NJ','PA','MD','DE','DC'],
+  Midwest:   ['OH','MI','IN','IL','WI','MN','IA','MO','ND','SD','NE','KS'],
+  Southeast: ['VA','WV','NC','SC','GA','FL','AL','MS','TN','KY','AR','LA'],
+  Southwest: ['TX','NM','AZ','OK','CO','UT','NV'],
+  Pacific:   ['WA','OR','CA','AK','HI','ID','MT','WY'],
+}
+
+function ghiLabel(ghi) {
+  if (ghi >= 5.5) return 'Exceptional'
+  if (ghi >= 5.0) return 'Excellent'
+  if (ghi >= 4.5) return 'High'
+  if (ghi >= 4.0) return 'Moderate'
+  return 'Low'
+}
+
+function outlookLabel(avgPrice, avgGhi) {
+  if (avgGhi >= 5.0 && avgPrice >= 0.14) return 'Optimal'
+  if (avgGhi >= 5.0) return 'High Yield'
+  if (avgPrice >= 0.18) return 'Price-Driven'
+  if (avgGhi >= 4.5) return 'Growing'
+  return 'Developing'
+}
 
 export default function MarketOverview() {
   const { data, error, isLoading } = useEiaData()
@@ -10,12 +36,13 @@ export default function MarketOverview() {
   const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
   const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
   const priceTimeSeries          = useDashboardStore((s) => s.priceTimeSeries)
+  const statePrices              = useDashboardStore((s) => s.statePrices)
   const marketLastFetched        = useDashboardStore((s) => s.marketLastFetched)
 
   // YoY calculations
   const sortedPrices = [...(data?.priceTimeSeries ?? [])].sort((a, b) => b.period.localeCompare(a.period))
-  const latestPrice      = sortedPrices[0]?.price
-  const priceOneYearAgo  = sortedPrices[12]?.price
+  const latestPrice     = sortedPrices[0]?.price
+  const priceOneYearAgo = sortedPrices[12]?.price
   const yoyPriceChangePct = latestPrice && priceOneYearAgo
     ? ((latestPrice - priceOneYearAgo) / priceOneYearAgo) * 100
     : null
@@ -28,6 +55,26 @@ export default function MarketOverview() {
   const lastUpdatedStr = marketLastFetched
     ? new Date(marketLastFetched).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : null
+
+  // GHI lookup from pre-bundled stateMetadata
+  const ghiByAbbr = useMemo(() => {
+    const map = {}
+    STATE_METADATA.forEach((s) => { map[s.abbr] = s.ghi })
+    return map
+  }, [])
+
+  // Compute regional averages from live EIA statePrices + pre-bundled NREL GHI
+  const regionalRows = useMemo(() => {
+    return Object.entries(REGIONS).map(([region, abbrs]) => {
+      const prices = abbrs.map((a) => statePrices[a]).filter((p) => p != null)
+      const ghis   = abbrs.map((a) => ghiByAbbr[a]).filter((g) => g != null)
+      const avgPrice = prices.length ? prices.reduce((s, v) => s + v, 0) / prices.length : null
+      const avgGhi   = ghis.length   ? ghis.reduce((s, v) => s + v, 0)   / ghis.length   : null
+      return { region, avgPrice, avgGhi }
+    })
+  }, [statePrices, ghiByAbbr])
+
+  const hasRegionalData = regionalRows.some((r) => r.avgPrice != null)
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -48,18 +95,16 @@ export default function MarketOverview() {
             U.S. Renewable Energy Sector Analysis
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {lastUpdatedStr && (
-            <div
-              className="bg-surface-container-low px-4 py-2 rounded-xl flex items-center gap-2"
-              aria-label={`Data last updated at ${lastUpdatedStr}`}
-            >
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
-              <span className="label-caps text-on-surface">Live Market Data</span>
-              <span className="text-[10px] text-on-surface/40 font-bold">{lastUpdatedStr}</span>
-            </div>
-          )}
-        </div>
+        {lastUpdatedStr && (
+          <div
+            className="bg-surface-container-low px-4 py-2 rounded-xl flex items-center gap-2"
+            aria-label={`Data last updated at ${lastUpdatedStr}`}
+          >
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
+            <span className="label-caps text-on-surface">Live Market Data</span>
+            <span className="text-[10px] text-on-surface/40 font-bold">{lastUpdatedStr}</span>
+          </div>
+        )}
       </section>
 
       {/* ── Error Banner ──────────────────────────────────────────── */}
@@ -79,32 +124,33 @@ export default function MarketOverview() {
       >
         <MetricCard
           label="National Avg. Electricity Price"
+          info="Average U.S. retail electricity price across all sectors from EIA; used as a baseline revenue assumption."
           value={nationalElectricityPrice != null ? `$${nationalElectricityPrice.toFixed(3)}` : null}
           unit="/ kWh"
           delta={yoyPriceChangePct}
           deltaLabel="% YoY"
-          source="vs prev. year"
+          source="vs prev. year · EIA"
           isLoading={isLoading}
           isError={!!error && !nationalElectricityPrice}
           watermarkIcon="bolt"
         />
         <MetricCard
           label="Installed Solar Capacity"
+          info="Total U.S. installed solar net summer capability in GW. Sourced from EIA State Electricity Profiles (Form EIA-860). Updated annually."
           value={totalSolarCapacityGW != null ? totalSolarCapacityGW.toFixed(0) : null}
           unit="GW"
           delta={yoyCapacityAdded}
           deltaLabel="GW added"
-          source="vs prev. year"
+          source="vs prev. year · EIA"
           isLoading={isLoading}
           isError={!!error && !totalSolarCapacityGW}
           watermarkIcon="wind_power"
         />
-        {/* Hero card — botanical gradient */}
         <MetricCard
           label="Federal ITC Rate"
+          info="Investment Tax Credit under the Inflation Reduction Act (IRA) 2022. Applies to solar projects placed in service through 2032. Source: IRS / U.S. Treasury."
           value="30%"
           unit=""
-          delta={null}
           source="IRA 2022 · through 2032"
           isLoading={false}
           isError={false}
@@ -113,9 +159,9 @@ export default function MarketOverview() {
         />
         <MetricCard
           label="Utility Solar LCOE Range"
+          info="Levelized Cost of Energy for utility-scale PV in the U.S., representing the range from low-resource to high-resource sites. Source: NREL Annual Technology Baseline 2024."
           value="$0.033–$0.068"
           unit="/ kWh"
-          delta={null}
           source="NREL ATB 2024"
           isLoading={false}
           isError={false}
@@ -129,71 +175,55 @@ export default function MarketOverview() {
         capacityData={isLoading ? [] : (data?.capacityTimeSeries ?? [])}
       />
 
-      <DataProvenance
-        title="Market Data Provenance"
-        fetchedAt={marketLastFetched}
-        items={[
-          { label: 'National Electricity Price', source: 'EIA retail-sales (monthly)', note: 'All sectors, U.S. aggregate' },
-          { label: 'State Electricity Rates', source: 'EIA retail-sales (annual)', note: 'Latest available state-level pricing' },
-          { label: 'Installed Solar Capacity', source: 'EIA electric-power-operational-data', note: 'Utility-scale annual capacity' },
-          { label: 'Reference Benchmarks', source: 'NREL ATB 2024 / IRA 2022', note: 'Displayed as static benchmark cards' },
-        ]}
-      />
-
       {/* ── Regional Table ────────────────────────────────────────── */}
       <section
         className="bg-surface-container-low rounded-xl overflow-hidden"
         aria-labelledby="regional-table-heading"
       >
-        <div className="px-6 py-5 flex items-center justify-between border-b ghost-border border-on-surface/5">
-          <h2 id="regional-table-heading" className="font-bold text-on-surface text-base">
-            Regional Market Context
-          </h2>
-          <span className="label-caps">EIA · Latest Annual</span>
+        <div className="px-6 py-5 flex items-center justify-between border-b border-on-surface/5">
+          <div>
+            <h2 id="regional-table-heading" className="font-bold text-on-surface text-base">
+              Regional Market Context
+            </h2>
+            <p className="label-caps mt-0.5 opacity-60">
+              {hasRegionalData
+                ? 'Live EIA state prices · NREL NSRDB irradiance'
+                : 'Loading regional data…'}
+            </p>
+          </div>
+          <span className="label-caps">EIA · NREL</span>
         </div>
-        <div className="overflow-x-auto scrollbar-botanical" role="region" aria-label="Regional market table, scroll horizontally to see all columns">
+        <div className="overflow-x-auto scrollbar-botanical" role="region" aria-label="Regional market table">
           <table className="w-full text-left" aria-label="Regional market performance">
             <thead>
               <tr className="bg-surface-container-high">
-                {['Region', 'Avg Price ($/kWh)', 'Solar Resource', 'YoY Change', 'Outlook'].map((h) => (
-                  <th
-                    key={h}
-                    scope="col"
-                    className="px-6 py-4 label-caps"
-                  >
-                    {h}
-                  </th>
+                {['Region', 'Avg Price ($/kWh)', 'Avg GHI (kWh/m²/day)', 'Solar Resource', 'Outlook'].map((h) => (
+                  <th key={h} scope="col" className="px-6 py-4 label-caps">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {[
-                { region: 'Northeast', price: '0.224', resource: 'Moderate', yoy: '+3.2', positive: true, outlook: 'Developing' },
-                { region: 'Midwest',   price: '0.142', resource: 'High',     yoy: '+14.5', positive: true, outlook: 'High Yield' },
-                { region: 'Southwest', price: '0.185', resource: 'Excellent', yoy: '+8.7', positive: true, outlook: 'Optimal' },
-                { region: 'Southeast', price: '0.131', resource: 'Good',     yoy: '+6.1', positive: true, outlook: 'Growing' },
-                { region: 'Pacific',   price: '0.248', resource: 'Good',     yoy: '-1.4', positive: false, outlook: 'Limited' },
-              ].map((row, i) => (
+              {regionalRows.map((row, i) => (
                 <tr
                   key={row.region}
                   className={i % 2 === 0 ? 'bg-surface' : 'bg-surface-container-low'}
                 >
                   <td className="px-6 py-4 font-bold text-sm text-on-surface">{row.region}</td>
-                  <td className="px-6 py-4 font-mono text-sm text-on-surface tabular-nums">{row.price}</td>
-                  <td className="px-6 py-4 text-sm text-on-surface-variant font-medium">{row.resource}</td>
-                  <td className="px-6 py-4">
-                    <span className={row.positive ? 'chip-positive' : 'chip-negative'}>
-                      <span className="material-symbols-outlined text-xs" aria-hidden="true"
-                        style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
-                        {row.positive ? 'trending_up' : 'trending_down'}
-                      </span>
-                      {row.yoy}%
-                    </span>
+                  <td className="px-6 py-4 font-mono text-sm text-on-surface tabular-nums">
+                    {row.avgPrice != null ? `$${row.avgPrice.toFixed(3)}` : '—'}
+                  </td>
+                  <td className="px-6 py-4 font-mono text-sm text-on-surface tabular-nums">
+                    {row.avgGhi != null ? row.avgGhi.toFixed(2) : '—'}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-on-surface-variant font-medium">
+                    {row.avgGhi != null ? ghiLabel(row.avgGhi) : '—'}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-                      {row.outlook}
-                    </span>
+                    {row.avgPrice != null && row.avgGhi != null ? (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                        {outlookLabel(row.avgPrice, row.avgGhi)}
+                      </span>
+                    ) : '—'}
                   </td>
                 </tr>
               ))}

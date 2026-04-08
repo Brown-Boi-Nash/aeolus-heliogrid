@@ -50,3 +50,12 @@
 > 1. **EIA API Data Formatting:** Public government APIs can sometimes return messy or nested data structures. Normalizing this data cleanly so it doesn't break the UI is a risk.
 > 2. **AI Context Window:** Ensuring the AI prompt effectively understands the financial data without hallucinating numbers.
 > 3. **Client-Side Secrets:** Ensuring API keys for EIA and NREL are safely routed through Vercel serverless functions or appropriately restricted if used purely client-side via Vite environment variables.
+
+---
+
+## TODO (Post-Core Improvements)
+
+- Add a first-time user onboarding flow:
+  - Ask whether the visitor is a first-time user.
+  - If yes, launch a short guided tour across the 4 tabs (market, calculator, assistant, map).
+  - Include a skip button and "don't show again" preference persisted in local storage.

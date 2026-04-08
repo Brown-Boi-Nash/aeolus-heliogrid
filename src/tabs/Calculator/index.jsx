@@ -4,7 +4,6 @@ import InputPanel from './InputPanel'
 import OutputPanel from './OutputPanel'
 import CashFlowSection from './CashFlowSection'
 import SensitivityHeatmap from './SensitivityHeatmap'
-import DataProvenance from '../../components/ui/DataProvenance'
 
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
@@ -55,40 +54,23 @@ export default function Calculator({ onNavigate }) {
         )}
       </section>
 
-      {/* ── 3-Column Layout (from Stitch: inputs | outputs | cashflow) ── */}
+      {/* ── Inputs (full width, horizontal) ──────────────────────── */}
+      <InputPanel selectedStateAbbr={selectedStateAbbr} />
+
+      {/* ── Outputs + Cash Flow side by side ──────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-        {/* Left: Input Panel (3 cols) */}
-        <div className="lg:col-span-3">
-          <InputPanel selectedStateAbbr={selectedStateAbbr} />
-        </div>
-
-        {/* Center: KPI Output Cards (4 cols) */}
         <div className="lg:col-span-4">
           <OutputPanel results={results} inputs={inputs} />
         </div>
-
-        {/* Right: Cash Flow Bars (5 cols) */}
-        <div className="lg:col-span-5 min-h-[600px]">
+        <div className="lg:col-span-8 min-h-[520px]">
           <CashFlowSection
             cashFlows={results.cashFlows}
             projectLifeYears={inputs.projectLifeYears}
           />
         </div>
-
       </div>
 
       <SensitivityHeatmap inputs={inputs} />
-
-      <DataProvenance
-        title="Calculation Data Provenance"
-        items={[
-          { label: 'Default Electricity Rate', source: 'EIA Open Data API', note: 'Auto-seeded into calculator inputs' },
-          { label: 'State Capacity Factor', source: 'NREL PVWatts v8', note: 'Fetched live on map state click' },
-          { label: 'Policy Assumption', source: 'IRS IRA 2022', note: 'ITC default modeled at 30%' },
-          { label: 'Financial Engine', source: 'Local deterministic model', note: 'IRR, NPV, LCOE, payback in financialCalc.js' },
-        ]}
-      />
 
       {/* ── Methodology Note ──────────────────────────────────────── */}
       <section

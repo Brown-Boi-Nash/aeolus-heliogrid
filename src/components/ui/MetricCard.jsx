@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import InfoHint from './InfoHint'
 
 /**
  * KPI card following the Botanical Ledger design system.
@@ -12,6 +13,7 @@ export default function MetricCard({
   delta,
   deltaLabel,
   source,
+  info,
   isLoading,
   isError,
   accentVariant = 'default', // 'default' | 'hero' (botanical gradient bg)
@@ -43,7 +45,10 @@ export default function MetricCard({
         aria-label={label}
       >
         <div className="space-y-1">
-          <p className="label-caps opacity-80 text-on-primary">{label}</p>
+          <p className="label-caps opacity-80 text-on-primary flex items-center gap-1.5">
+            {label}
+            <InfoHint text={info} label={`${label} definition`} />
+          </p>
           <p className="text-4xl font-black tracking-tight italic" aria-live="polite">
             {isError ? '—' : (value ?? '—')}
             {unit && !isError && (
@@ -79,7 +84,10 @@ export default function MetricCard({
       aria-label={label}
     >
       <div className="space-y-1">
-        <p className="label-caps">{label}</p>
+        <p className="label-caps flex items-center gap-1.5">
+          {label}
+          <InfoHint text={info} label={`${label} definition`} />
+        </p>
         <p
           className="text-4xl font-extrabold text-primary tracking-tight tabular-nums"
           aria-live="polite"

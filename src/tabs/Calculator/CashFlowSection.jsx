@@ -52,7 +52,7 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
 
       {/* Bars */}
       <div
-        className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-botanical pr-1"
+        className="flex-1 flex flex-col gap-3 overflow-y-auto scrollbar-botanical pr-1"
         role="list"
         aria-label="Annual cash flows"
       >
@@ -70,12 +70,12 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
               role="listitem"
               aria-label={`Year ${yi}: $${cfM}M`}
             >
-              <span className="w-10 text-[10px] font-bold text-on-surface-variant tabular-nums flex-shrink-0">
+              <span className="w-10 text-xs font-bold text-on-surface-variant tabular-nums flex-shrink-0">
                 YR {yi}
               </span>
               <div
                 className={clsx(
-                  'relative flex-1 h-8 rounded-sm flex items-center overflow-hidden',
+                  'relative flex-1 h-11 rounded-sm flex items-center overflow-hidden',
                   'bg-surface-container'
                 )}
               >
@@ -89,7 +89,7 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
                 />
                 <span
                   className={clsx(
-                    'absolute left-3 text-[10px] font-black tabular-nums',
+                    'absolute left-3 text-xs font-black tabular-nums',
                     isNegative ? 'text-white' : 'text-primary'
                   )}
                 >
