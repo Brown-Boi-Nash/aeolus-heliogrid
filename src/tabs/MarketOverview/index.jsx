@@ -2,6 +2,7 @@ import { useEiaData } from '../../hooks/useEiaData'
 import useDashboardStore from '../../store/dashboardStore'
 import MetricCard from '../../components/ui/MetricCard'
 import CapacityTrendChart from './CapacityTrendChart'
+import DataProvenance from '../../components/ui/DataProvenance'
 
 export default function MarketOverview() {
   const { data, error, isLoading } = useEiaData()
@@ -126,6 +127,17 @@ export default function MarketOverview() {
       <CapacityTrendChart
         priceData={isLoading ? [] : priceTimeSeries}
         capacityData={isLoading ? [] : (data?.capacityTimeSeries ?? [])}
+      />
+
+      <DataProvenance
+        title="Market Data Provenance"
+        fetchedAt={marketLastFetched}
+        items={[
+          { label: 'National Electricity Price', source: 'EIA retail-sales (monthly)', note: 'All sectors, U.S. aggregate' },
+          { label: 'State Electricity Rates', source: 'EIA retail-sales (annual)', note: 'Latest available state-level pricing' },
+          { label: 'Installed Solar Capacity', source: 'EIA electric-power-operational-data', note: 'Utility-scale annual capacity' },
+          { label: 'Reference Benchmarks', source: 'NREL ATB 2024 / IRA 2022', note: 'Displayed as static benchmark cards' },
+        ]}
       />
 
       {/* ── Regional Table ────────────────────────────────────────── */}

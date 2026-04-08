@@ -320,3 +320,14 @@ src/
 | OpenAI as AI provider | Google Gemini | Free tier, no billing required |
 | Pre-fetch all 50 NREL states | Pre-bundle GHI from NSRDB, live PVWatts on click only | Rate limit protection |
 | mathjs for IRR | Custom bisection in financialCalc.js | mathjs IRR API is not straightforward; bisection is more transparent |
+
+---
+
+## Post-Plan Enhancements
+
+| Enhancement | Implementation |
+|------------|----------------|
+| Global error resilience | App-level React Error Boundary wraps `App` in `main.jsx` and presents a graceful fallback with reload action |
+| Sensitivity analysis stretch goal | Added 5x5 IRR sensitivity heatmap on Project Economics tab (`electricityRate` vs `installCostPerW`, +/-20%) |
+| Data provenance stretch goal | Added provenance panels with source attribution and fetch context to Market, Map, and Calculator tabs |
+| Responsive polish | Improved map container sizing and Research Assistant viewport behavior on smaller screens |

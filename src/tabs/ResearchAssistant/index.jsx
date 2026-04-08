@@ -94,7 +94,7 @@ export default function ResearchAssistant() {
   const isEmpty = chatMessages.length === 0
 
   return (
-    <div className="animate-fade-in" style={{ height: 'calc(100vh - 200px)', minHeight: 500 }}>
+    <div className="animate-fade-in h-[70vh] min-h-[520px] md:h-[calc(100vh-220px)]">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full rounded-xl overflow-hidden shadow-botanical">
 
         {/* ── Chat Area ─────────────────────────────────────────────── */}
@@ -256,6 +256,22 @@ export default function ResearchAssistant() {
           <div>
             <h2 className="label-caps mb-3">Suggested Questions</h2>
             <SuggestedQuestions onSelect={sendMessage} />
+          </div>
+
+          <div>
+            <h2 className="label-caps mb-3">Data Provenance</h2>
+            <div className="space-y-2">
+              {[
+                'EIA Open Data API (market pricing, capacity)',
+                'NREL NSRDB + PVWatts (irradiance, capacity factor)',
+                'Calculator state (IRR, NPV, LCOE, payback)',
+                'Gemini 2.5 Flash Lite (grounded response synthesis)',
+              ].map((line) => (
+                <div key={line} className="bg-surface-container-lowest rounded-lg px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/65">{line}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
 

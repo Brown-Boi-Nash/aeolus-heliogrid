@@ -4,7 +4,7 @@ function KpiCard({ label, value, unit, sub, icon, status }) {
   // status: 'good' | 'warn' | 'bad' | 'neutral'
   const statusColor = {
     good:    'text-primary',
-    warn:    'text-solar-600',
+    warn:    'text-secondary',
     bad:     'text-error',
     neutral: 'text-on-surface',
   }[status ?? 'neutral']

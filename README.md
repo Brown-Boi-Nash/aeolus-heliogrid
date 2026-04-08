@@ -1,7 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/hl3jCjv_)
 # CDF AI Engineering Hackathon
 
-**Live URL:** <!-- Add your deployment URL here before submission e.g. https://your-app.vercel.app -->
+**Live URL:** `TBD - add Vercel deployment URL`
 
 Welcome! This is your personal repository for the CDF AI Engineering Hackathon. The problem statement is included in this repo - read it carefully before you start.
 
@@ -31,11 +31,27 @@ See [`PROBLEM_STATEMENT.md`](./PROBLEM_STATEMENT.md) for the full brief.
 
 ## 🚀 Getting Started
 
-1. **Read the problem statement** - [`PROBLEM_STATEMENT.md`](./PROBLEM_STATEMENT.md)
-2. **Fill out your planning document** - [`planning/PLANNING.md`](./planning/PLANNING.md) before writing any code
-3. **Build your solution** inside the `src/` directory
-4. **Deploy** to Vercel, Netlify, Cloudflare Pages, or similar — set your API keys as environment variables in your hosting dashboard, never in the repo
-5. **Update this README** with your live URL and reflections before the deadline
+1. Install dependencies:
+   - `npm install`
+2. Create `.env.local` with:
+   - `VITE_EIA_API_KEY=...`
+   - `VITE_NREL_API_KEY=...`
+   - `VITE_GEMINI_API_KEY=...`
+   - `VITE_MAPBOX_TOKEN=...`
+3. Run locally:
+   - `npm run dev`
+4. Build for production:
+   - `npm run build`
+5. Preview production build:
+   - `npm run preview`
+
+## ☁️ Vercel Deployment
+
+1. Import this repo into Vercel.
+2. Set Framework Preset to `Vite` (auto-detected in most cases).
+3. Add the same environment variables from `.env.local` in Vercel Project Settings.
+4. Deploy and verify all four tabs load with live API data.
+5. Replace the `Live URL` line at the top of this README with the deployed URL.
 
 ---
 

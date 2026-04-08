@@ -3,6 +3,8 @@ import { useCalculator } from '../../hooks/useCalculator'
 import InputPanel from './InputPanel'
 import OutputPanel from './OutputPanel'
 import CashFlowSection from './CashFlowSection'
+import SensitivityHeatmap from './SensitivityHeatmap'
+import DataProvenance from '../../components/ui/DataProvenance'
 
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
@@ -75,6 +77,18 @@ export default function Calculator({ onNavigate }) {
         </div>
 
       </div>
+
+      <SensitivityHeatmap inputs={inputs} />
+
+      <DataProvenance
+        title="Calculation Data Provenance"
+        items={[
+          { label: 'Default Electricity Rate', source: 'EIA Open Data API', note: 'Auto-seeded into calculator inputs' },
+          { label: 'State Capacity Factor', source: 'NREL PVWatts v8', note: 'Fetched live on map state click' },
+          { label: 'Policy Assumption', source: 'IRS IRA 2022', note: 'ITC default modeled at 30%' },
+          { label: 'Financial Engine', source: 'Local deterministic model', note: 'IRR, NPV, LCOE, payback in financialCalc.js' },
+        ]}
+      />
 
       {/* ── Methodology Note ──────────────────────────────────────── */}
       <section

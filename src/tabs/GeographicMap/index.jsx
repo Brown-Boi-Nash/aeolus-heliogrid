@@ -1,10 +1,12 @@
-import { Suspense } from 'react'
 import MapContainer from './MapContainer'
 import { useEiaData } from '../../hooks/useEiaData'
+import useDashboardStore from '../../store/dashboardStore'
+import DataProvenance from '../../components/ui/DataProvenance'
 
 export default function GeographicMap({ onNavigate }) {
   // Ensure EIA state prices are loaded (shared hook — deduped by SWR)
   useEiaData()
+  const marketLastFetched = useDashboardStore((s) => s.marketLastFetched)
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -33,10 +35,21 @@ export default function GeographicMap({ onNavigate }) {
       {/* ── Map ───────────────────────────────────────────────────── */}
       <div
         className="rounded-xl overflow-hidden shadow-botanical"
-        style={{ height: 520 }}
+        style={{ height: 'clamp(380px, 55vh, 520px)' }}
       >
         <MapContainer onNavigate={onNavigate} />
       </div>
+
+      <DataProvenance
+        title="Geospatial Data Provenance"
+        fetchedAt={marketLastFetched}
+        items={[
+          { label: 'State Geometry', source: 'US Census TIGER GeoJSON', note: 'Bundled static geometry in assets' },
+          { label: 'Solar Irradiance (GHI)', source: 'NREL NSRDB (pre-bundled by state)', note: 'Used for choropleth shading' },
+          { label: 'Capacity Factor', source: 'NREL PVWatts v8 API', note: 'Queried live for clicked state lat/lon' },
+          { label: 'Electricity Rates', source: 'EIA Open Data API', note: 'Mapped by state abbreviation' },
+        ]}
+      />
 
       {/* ── How to Use ────────────────────────────────────────────── */}
       <section
