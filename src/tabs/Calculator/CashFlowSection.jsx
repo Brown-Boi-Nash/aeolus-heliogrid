@@ -1,0 +1,147 @@
+import clsx from 'clsx'
+
+/**
+ * Horizontal cash flow bar chart — Botanical Ledger style from Stitch design.
+ * Each year is a horizontal bar: negative (capex) in error red, positive in primary green.
+ */
+export default function CashFlowSection({ cashFlows, projectLifeYears }) {
+  if (!cashFlows?.length) return null
+
+  const equity = Math.abs(cashFlows[0])
+
+  // Determine the display years (Year 0, 1–5, 10, 15, 20, 25)
+  const yearIndices = [0]
+  for (let y = 1; y <= projectLifeYears; y++) {
+    if (y <= 5 || y % 5 === 0) yearIndices.push(y)
+  }
+
+  // Max absolute value for bar scaling
+  const maxAbs = Math.max(equity, ...cashFlows.slice(1).map(Math.abs))
+
+  // Cumulative tracking for payback annotation
+  let cumulative = 0
+  let paybackYear = null
+  for (let i = 1; i < cashFlows.length; i++) {
+    cumulative += cashFlows[i]
+    if (cumulative >= equity && paybackYear === null) paybackYear = i
+  }
+
+  return (
+    <section
+      className="bg-surface-container-low rounded-xl p-6 flex flex-col gap-6 h-full"
+      aria-labelledby="cashflow-heading"
+    >
+      <div className="flex items-end justify-between">
+        <div className="space-y-0.5">
+          <h2 id="cashflow-heading" className="font-bold text-on-surface text-base uppercase tracking-wider">
+            {projectLifeYears}-Year Cash Flow
+          </h2>
+          <p className="label-caps opacity-60">Annual free cash flow to equity</p>
+        </div>
+        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-widest">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-primary inline-block" aria-hidden="true" />
+            Positive
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-error inline-block" aria-hidden="true" />
+            Outflow
+          </span>
+        </div>
+      </div>
+
+      {/* Bars */}
+      <div
+        className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-botanical pr-1"
+        role="list"
+        aria-label="Annual cash flows"
+      >
+        {yearIndices.map((yi) => {
+          const cf = cashFlows[yi] ?? 0
+          const isNegative = cf < 0
+          const barPct = Math.min(Math.abs(cf) / maxAbs, 1) * 100
+          const cfM = (cf / 1_000_000).toFixed(2)
+          const isPaybackYear = yi === paybackYear
+
+          return (
+            <div
+              key={yi}
+              className="flex items-center gap-3 group"
+              role="listitem"
+              aria-label={`Year ${yi}: $${cfM}M`}
+            >
+              <span className="w-10 text-[10px] font-bold text-on-surface-variant tabular-nums flex-shrink-0">
+                YR {yi}
+              </span>
+              <div
+                className={clsx(
+                  'relative flex-1 h-8 rounded-sm flex items-center overflow-hidden',
+                  'bg-surface-container'
+                )}
+              >
+                <div
+                  className={clsx(
+                    'h-full rounded-sm transition-all duration-300',
+                    isNegative ? 'bg-error/80' : 'bg-primary/40 group-hover:bg-primary/60'
+                  )}
+                  style={{ width: `${barPct}%` }}
+                  aria-hidden="true"
+                />
+                <span
+                  className={clsx(
+                    'absolute left-3 text-[10px] font-black tabular-nums',
+                    isNegative ? 'text-white' : 'text-primary'
+                  )}
+                >
+                  {isNegative ? '' : '+'}{cf >= 0 ? `$${cfM}M` : `-$${Math.abs(cf / 1_000_000).toFixed(2)}M`}
+                </span>
+              </div>
+              {isPaybackYear && (
+                <span
+                  className="text-[9px] font-extrabold uppercase tracking-widest text-primary flex-shrink-0"
+                  aria-label="Payback year"
+                >
+                  Payback ✓
+                </span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Divider label — from Stitch */}
+      {projectLifeYears > 5 && (
+        <div className="flex items-center justify-center opacity-30" aria-hidden="true">
+          <div className="flex-1 border-t border-dashed border-outline-variant/20" />
+          <span className="mx-3 text-[8px] font-bold uppercase tracking-[0.3em]">Operational Phase</span>
+          <div className="flex-1 border-t border-dashed border-outline-variant/20" />
+        </div>
+      )}
+
+      {/* Payback summary */}
+      <div className="pt-2 border-t border-on-surface/5">
+        <div
+          className="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-botanical"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="w-11 h-11 bg-secondary-container rounded-full flex items-center justify-center flex-shrink-0">
+            <span
+              className="material-symbols-outlined text-on-secondary-container"
+              aria-hidden="true"
+              style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
+            >
+              {paybackYear ? 'check_circle' : 'schedule'}
+            </span>
+          </div>
+          <div>
+            <p className="label-caps">Payback Period</p>
+            <p className="text-xl font-black text-primary tabular-nums" aria-live="polite">
+              {paybackYear ? `${paybackYear} Years` : 'Not recovered'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
