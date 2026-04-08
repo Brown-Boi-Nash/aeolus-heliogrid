@@ -13,7 +13,7 @@ export async function fetchPVWatts(lat, lon) {
   url.searchParams.set('azimuth', '180')
   url.searchParams.set('lat', lat)
   url.searchParams.set('lon', lon)
-  url.searchParams.set('timeframe', 'annual')
+  // timeframe omitted — annual totals (capacity_factor, ac_annual) are always returned
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`NREL PVWatts fetch failed: ${res.status}`)
