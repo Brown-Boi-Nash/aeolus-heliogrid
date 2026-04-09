@@ -2,16 +2,18 @@
 export default function LegendPanel({ energyType = 'solar' }) {
   const stops = energyType === 'wind'
     ? [
-      { value: '< 5.0', color: '#f0f9e8' },
+      { value: '< 5.5', color: '#c8e6b0' },
       { value: '5.5',   color: '#a8ddb5' },
-      { value: '6.0',   color: '#43a2ca' },
-      { value: '6.5',   color: '#1d6fa4' },
+      { value: '6.0',   color: '#6cbf8e' },
+      { value: '6.5',   color: '#43a2ca' },
+      { value: '7.0',   color: '#1d6fa4' },
       { value: '7.5',   color: '#244a3e' },
       { value: '> 8.0', color: '#102002' },
     ]
     : [
-      { value: '< 3.5', color: '#f0f9e8' },
-      { value: '4.0',   color: '#a8ddb5' },
+      { value: '< 3.5', color: '#c8e6b0' },
+      { value: '3.5',   color: '#a8ddb5' },
+      { value: '4.0',   color: '#6cbf8e' },
       { value: '4.5',   color: '#43a2ca' },
       { value: '5.0',   color: '#1d6fa4' },
       { value: '5.5',   color: '#244a3e' },

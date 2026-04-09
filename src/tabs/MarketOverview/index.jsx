@@ -171,16 +171,16 @@ export default function MarketOverview() {
           source="vs prev. year · EIA"
           isLoading={isLoading}
           isError={!!error && !(energyType === 'wind' ? totalWindCapacityGW : totalSolarCapacityGW)}
-          watermarkIcon="wind_power"
+          watermarkIcon={energyType === 'wind' ? 'wind_power' : 'solar_power'}
         />
         <MetricCard
-          label="Federal ITC Rate"
+          label={energyType === 'wind' ? 'Federal ITC / PTC' : 'Federal ITC Rate'}
           info={energyType === 'wind'
-            ? 'Federal tax incentives for wind under IRA 2022 support either ITC or PTC pathways, depending on project election.'
+            ? 'Wind projects under IRA 2022 may elect a 30% Investment Tax Credit (ITC) or the Production Tax Credit (PTC) at $0.028/kWh for 10 years. Election depends on project economics. Source: IRS / U.S. Treasury.'
             : 'Investment Tax Credit under the Inflation Reduction Act (IRA) 2022. Applies to solar projects placed in service through 2032. Source: IRS / U.S. Treasury.'}
-          value={energyType === 'wind' ? 'ITC/PTC' : '30%'}
+          value="30%"
           unit=""
-          source={energyType === 'wind' ? 'IRA 2022 · technology elective' : 'IRA 2022 · through 2032'}
+          source={energyType === 'wind' ? 'IRA 2022 · ITC or PTC elective' : 'IRA 2022 · through 2032'}
           isLoading={false}
           isError={false}
           accentVariant="hero"
@@ -196,7 +196,7 @@ export default function MarketOverview() {
           source="NREL ATB 2024"
           isLoading={false}
           isError={false}
-          watermarkIcon="solar_power"
+          watermarkIcon={energyType === 'wind' ? 'wind_power' : 'solar_power'}
         />
       </section>
 

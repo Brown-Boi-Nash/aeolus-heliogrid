@@ -99,11 +99,11 @@ export default function ResearchAssistant() {
 
   return (
     <div className="animate-fade-in h-[70vh] min-h-[520px] md:h-[calc(100vh-220px)]">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full rounded-xl overflow-hidden shadow-botanical">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full min-h-0 rounded-xl overflow-hidden shadow-botanical">
 
         {/* ── Chat Area ─────────────────────────────────────────────── */}
         <section
-          className="lg:col-span-8 flex flex-col bg-surface-container-low"
+          className="lg:col-span-8 h-full flex flex-col min-h-0 bg-surface-container-low"
           aria-label="Chat conversation"
         >
           {/* Chat header */}
@@ -133,7 +133,7 @@ export default function ResearchAssistant() {
 
           {/* Messages */}
           <div
-            className="flex-1 overflow-y-auto p-6 scrollbar-botanical"
+            className="flex-1 min-h-0 overflow-y-auto p-6 scrollbar-botanical"
             role="list"
             aria-label="Chat messages"
             aria-live="polite"
@@ -147,7 +147,7 @@ export default function ResearchAssistant() {
                 <div>
                   <h2 className="text-xl font-extrabold text-on-surface mb-1">Ask about your investment</h2>
                   <p className="text-sm text-on-surface-variant max-w-sm">
-                    I have access to your live EIA data, map resource context, and current calculator scenario.
+                    I'm in <strong>{energyType === 'wind' ? 'Wind' : 'Solar'} mode</strong> with access to your live EIA data, {energyType === 'wind' ? 'wind resource' : 'solar irradiance'} map context, and current calculator scenario.
                     {' '}
                     Try a question from the panel →
                   </p>
@@ -189,7 +189,9 @@ export default function ResearchAssistant() {
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask about LCOE, IRR, ITC policy, state solar resources…"
+                  placeholder={energyType === 'wind'
+                    ? 'Ask about wind LCOE, IRR, ITC vs PTC, state wind resources…'
+                    : 'Ask about solar LCOE, IRR, ITC policy, state solar resources…'}
                   rows={1}
                   className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none scrollbar-botanical max-h-32 min-h-[44px] text-on-surface placeholder:text-on-surface/30"
                   aria-label="Chat message input. Press Enter to send, Shift+Enter for new line."
@@ -220,7 +222,7 @@ export default function ResearchAssistant() {
 
         {/* ── Context Sidebar ────────────────────────────────────────── */}
         <aside
-          className="lg:col-span-4 bg-surface-container-high p-5 flex flex-col gap-6 overflow-y-auto scrollbar-botanical border-l border-on-surface/5"
+          className="lg:col-span-4 h-full min-h-0 bg-surface-container-high p-5 flex flex-col gap-6 overflow-y-auto scrollbar-botanical border-l border-on-surface/5"
           aria-label="Active data context and suggested questions"
         >
           {/* Live Context Feed */}
@@ -264,24 +266,9 @@ export default function ResearchAssistant() {
           {/* Suggested Questions */}
           <div>
             <h2 className="label-caps mb-3">Suggested Questions</h2>
-            <SuggestedQuestions onSelect={sendMessage} />
+            <SuggestedQuestions onSelect={sendMessage} energyType={energyType} />
           </div>
 
-          <div>
-            <h2 className="label-caps mb-3">Data Provenance</h2>
-            <div className="space-y-2">
-              {[
-                'EIA Open Data API (market pricing, capacity)',
-                'NREL NSRDB + PVWatts (irradiance, capacity factor)',
-                'Calculator state (IRR, NPV, LCOE, payback)',
-                'Gemini 2.5 Flash Lite (grounded response synthesis)',
-              ].map((line) => (
-                <div key={line} className="bg-surface-container-lowest rounded-lg px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/65">{line}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </aside>
 
       </div>

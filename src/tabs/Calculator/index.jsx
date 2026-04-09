@@ -1,14 +1,61 @@
+import { useState, useCallback } from 'react'
 import useDashboardStore from '../../store/dashboardStore'
 import { useCalculator } from '../../hooks/useCalculator'
 import InputPanel from './InputPanel'
 import OutputPanel from './OutputPanel'
 import CashFlowSection from './CashFlowSection'
 import SensitivityHeatmap from './SensitivityHeatmap'
+import MemoModal from './MemoModal'
+import { generateInvestmentMemo } from '../../lib/geminiClient'
 
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
   const selectedStateAbbr = useDashboardStore((s) => s.selectedStateAbbr)
-  const energyType = useDashboardStore((s) => s.energyType)
+  const energyType        = useDashboardStore((s) => s.energyType)
+  const selectedState     = useDashboardStore((s) => s.selectedState)
+  const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
+  const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
+  const totalWindCapacityGW      = useDashboardStore((s) => s.totalWindCapacityGW)
+
+  const [showMemo, setShowMemo]         = useState(false)
+  const [memo, setMemo]                 = useState(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const handleGenerateMemo = useCallback(async () => {
+    setMemo(null)
+    setShowMemo(true)
+    setIsGenerating(true)
+    try {
+      const text = await generateInvestmentMemo({
+        energyType,
+        selectedState,
+        nationalElectricityPrice,
+        totalSolarCapacityGW,
+        totalWindCapacityGW,
+        irr:               results.irr,
+        npv:               results.npv,
+        lcoe:              results.lcoe,
+        payback:           results.payback,
+        scenario:          inputs.scenario,
+        systemSizeKW:      inputs.systemSizeKW,
+        capacityFactor:    inputs.capacityFactor,
+        installCostPerW:   inputs.installCostPerW,
+        omCostPerKWPerYear: inputs.omCostPerKWPerYear,
+        debtFraction:      inputs.debtFraction,
+        itcPercent:        inputs.itcPercent,
+        projectLifeYears:  inputs.projectLifeYears,
+      })
+      setMemo(text)
+    } catch (err) {
+      setMemo('Failed to generate memo. Please check your Gemini API key and try again.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [energyType, selectedState, nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, inputs, results])
+
+  const handleCopy = useCallback(() => {
+    if (memo) navigator.clipboard.writeText(memo)
+  }, [memo])
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -29,6 +76,18 @@ export default function Calculator({ onNavigate }) {
             {energyType === 'wind' ? 'Wind' : 'Solar'} investment return modeling · Instant recalculation
           </p>
         </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={handleGenerateMemo}
+            disabled={isGenerating}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-extrabold uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-botanical disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            aria-label="Generate AI investment memo"
+          >
+            <span className="material-symbols-outlined text-sm"
+              style={{ fontVariationSettings: "'FILL' 1" }}>description</span>
+            {isGenerating ? 'Generating…' : 'Generate Memo'}
+          </button>
 
         {selectedStateAbbr && (
           <div
@@ -53,7 +112,17 @@ export default function Calculator({ onNavigate }) {
             </button>
           </div>
         )}
+        </div>
       </section>
+
+      {showMemo && (
+        <MemoModal
+          memo={memo}
+          isGenerating={isGenerating}
+          onClose={() => setShowMemo(false)}
+          onCopy={handleCopy}
+        />
+      )}
 
       {/* ── Inputs (full width, horizontal) ──────────────────────── */}
       <InputPanel selectedStateAbbr={selectedStateAbbr} energyType={energyType} />

@@ -10,19 +10,28 @@ export default function StatePopup({ state, energyType = 'solar', onClose, onUse
       latitude={lat}
       longitude={lon}
       onClose={onClose}
-      closeButton={true}
+      closeButton={false}
       closeOnClick={false}
       anchor="bottom"
       offset={12}
       style={{ fontFamily: 'Manrope, sans-serif' }}
     >
       <div
-        className="bg-surface-container-lowest rounded-xl p-4 min-w-[220px]"
+        className="bg-surface-container-lowest rounded-xl p-4 min-w-[220px] relative"
         role="dialog"
         aria-label={`${name} ${energyType} data`}
       >
+        <button
+          onClick={onClose}
+          className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary flex items-center justify-center"
+          aria-label="Close popup"
+          type="button"
+        >
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">close</span>
+        </button>
+
         {/* Header */}
-        <div className="mb-3">
+        <div className="mb-3 pr-8">
           <p className="label-caps text-primary mb-0.5">
             State {energyType === 'wind' ? 'Wind' : 'Solar'} Profile
           </p>

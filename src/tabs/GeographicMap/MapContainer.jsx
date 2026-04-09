@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import Map, { Source, Layer } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import useDashboardStore from '../../store/dashboardStore'
@@ -14,9 +14,9 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
 const GHI_COLOR_EXPRESSION = [
   'interpolate', ['linear'],
   ['coalesce', ['get', 'ghi'], 3.5],
-  3.0, '#f0f9e8',
-  3.5, '#ccebc5',
-  4.0, '#a8ddb5',
+  3.0, '#c8e6b0',
+  3.5, '#a8ddb5',
+  4.0, '#6cbf8e',
   4.5, '#43a2ca',
   5.0, '#1d6fa4',
   5.5, '#244a3e',
@@ -26,9 +26,9 @@ const GHI_COLOR_EXPRESSION = [
 const WIND_COLOR_EXPRESSION = [
   'interpolate', ['linear'],
   ['coalesce', ['get', 'windSpeed'], 4.5],
-  4.5, '#f0f9e8',
-  5.5, '#ccebc5',
-  6.0, '#a8ddb5',
+  4.5, '#c8e6b0',
+  5.5, '#a8ddb5',
+  6.0, '#6cbf8e',
   6.5, '#43a2ca',
   7.0, '#1d6fa4',
   7.5, '#244a3e',
@@ -45,6 +45,26 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
   const [isLoadingNrel, setLoadingNrel] = useState(false)
   const [appliedState, setAppliedState] = useState(null)
   const [rawGeoJson, setRawGeoJson]   = useState(null)
+  const mapRef = useRef(null)
+  const styleAdjustedRef = useRef(false)
+
+  const removeLabelHalo = useCallback(() => {
+    if (styleAdjustedRef.current) return
+    const map = mapRef.current?.getMap?.()
+    if (!map || !map.isStyleLoaded()) return
+
+    const style = map.getStyle()
+    const layers = style?.layers ?? []
+    for (const layer of layers) {
+      if (layer.type !== 'symbol') continue
+      try { map.setPaintProperty(layer.id, 'text-halo-width', 0) } catch {}
+      try { map.setPaintProperty(layer.id, 'text-halo-color', 'rgba(0,0,0,0)') } catch {}
+      if (typeof layer.id === 'string' && layer.id.includes('state-label')) {
+        try { map.setPaintProperty(layer.id, 'text-color', '#2b3430') } catch {}
+      }
+    }
+    styleAdjustedRef.current = true
+  }, [])
 
   // Fetch GeoJSON from asset URL once
   useEffect(() => {
@@ -150,8 +170,8 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
     'fill-color': energyType === 'wind' ? WIND_COLOR_EXPRESSION : GHI_COLOR_EXPRESSION,
     'fill-opacity': [
       'case',
-      ['==', ['get', 'fips'], hoveredFips ?? ''], 0.95,
-      0.72,
+      ['==', ['get', 'fips'], hoveredFips ?? ''], 1.0,
+      0.88,
     ],
   }), [hoveredFips, energyType])
 
@@ -163,9 +183,11 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden" style={{ minHeight: 480 }}>
       <Map
+        ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={{ longitude: -98.5, latitude: 39.5, zoom: 3.5 }}
         mapStyle="mapbox://styles/mapbox/light-v11"
+        onLoad={removeLabelHalo}
         interactiveLayerIds={['state-fill']}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}

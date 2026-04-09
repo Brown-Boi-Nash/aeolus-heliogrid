@@ -55,18 +55,18 @@ export default function App() {
       >
         <div className="max-w-[1440px] mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
           {/* Brand */}
-          <div className="flex items-center gap-3" aria-label="The Botanical Ledger">
+          <div className="flex items-center gap-3" aria-label="Aeolus HelioGrid">
             <div
               className="w-8 h-8 rounded-xl bg-botanical-gradient flex items-center justify-center"
               aria-hidden="true"
             >
               <span className="material-symbols-outlined text-white text-lg"
                 style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}>
-                eco
+                wind_power
               </span>
             </div>
             <span className="text-lg font-extrabold tracking-tight text-primary">
-              The Botanical Ledger
+              Aeolus HelioGrid
             </span>
           </div>
 

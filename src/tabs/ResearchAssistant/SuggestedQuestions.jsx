@@ -1,19 +1,29 @@
-const SUGGESTIONS = [
-  'What is LCOE and how does my project compare?',
-  'Explain the 30% Investment Tax Credit (ITC)',
+const SOLAR_SUGGESTIONS = [
+  'What is LCOE and how does my solar project compare?',
+  'Explain the 30% Investment Tax Credit (ITC) for solar',
   'How does my IRR compare to market benchmarks?',
-  'Which U.S. states have the best solar resource?',
-  'What is the impact of battery storage co-location?',
+  'Which U.S. states have the best solar irradiance?',
+  'What is the impact of battery storage co-location with solar?',
 ]
 
-export default function SuggestedQuestions({ onSelect }) {
+const WIND_SUGGESTIONS = [
+  'What is LCOE and how does my wind project compare?',
+  'Should I use ITC or PTC for a wind project under the IRA?',
+  'How does my IRR compare to onshore wind benchmarks?',
+  'Which U.S. states have the best wind resource at 100m?',
+  'What are the key O&M cost drivers for onshore wind turbines?',
+]
+
+export default function SuggestedQuestions({ onSelect, energyType = 'solar' }) {
+  const suggestions = energyType === 'wind' ? WIND_SUGGESTIONS : SOLAR_SUGGESTIONS
+
   return (
     <div
       className="flex flex-col gap-2"
       role="list"
       aria-label="Suggested questions"
     >
-      {SUGGESTIONS.map((q) => (
+      {suggestions.map((q) => (
         <button
           key={q}
           role="listitem"
