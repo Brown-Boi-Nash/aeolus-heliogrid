@@ -35,6 +35,9 @@ export default function ResearchAssistant() {
   const totalWindCapacityGW      = useDashboardStore((s) => s.totalWindCapacityGW)
   const energyType               = useDashboardStore((s) => s.energyType)
   const selectedState            = useDashboardStore((s) => s.selectedState)
+  const treasury10Y              = useDashboardStore((s) => s.treasury10Y)
+  const fedFunds                 = useDashboardStore((s) => s.fedFunds)
+  const breakEvenInflation       = useDashboardStore((s) => s.breakEvenInflation)
   const { inputs, results }      = useCalculator()
 
   // Scroll to bottom on new messages
@@ -58,8 +61,11 @@ export default function ResearchAssistant() {
       systemSizeKW: adjusted.systemSizeKW,
       capacityFactor: adjusted.capacityFactor,
       selectedState,
+      treasury10Y,
+      fedFunds,
+      breakEvenInflation,
     }
-  }, [nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, energyType, inputs, results, selectedState])
+  }, [nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, energyType, inputs, results, selectedState, treasury10Y, fedFunds, breakEvenInflation])
 
   const sendMessage = useCallback(async (text) => {
     const trimmed = (text ?? inputText).trim()

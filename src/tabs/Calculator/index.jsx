@@ -16,6 +16,9 @@ export default function Calculator({ onNavigate }) {
   const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
   const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
   const totalWindCapacityGW      = useDashboardStore((s) => s.totalWindCapacityGW)
+  const treasury10Y              = useDashboardStore((s) => s.treasury10Y)
+  const fedFunds                 = useDashboardStore((s) => s.fedFunds)
+  const breakEvenInflation       = useDashboardStore((s) => s.breakEvenInflation)
 
   const [showMemo, setShowMemo]         = useState(false)
   const [memo, setMemo]                 = useState(null)
@@ -44,6 +47,9 @@ export default function Calculator({ onNavigate }) {
         debtFraction:      inputs.debtFraction,
         itcPercent:        inputs.itcPercent,
         projectLifeYears:  inputs.projectLifeYears,
+        treasury10Y,
+        fedFunds,
+        breakEvenInflation,
       })
       setMemo(text)
     } catch (err) {
@@ -51,7 +57,7 @@ export default function Calculator({ onNavigate }) {
     } finally {
       setIsGenerating(false)
     }
-  }, [energyType, selectedState, nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, inputs, results])
+  }, [energyType, selectedState, nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, treasury10Y, fedFunds, breakEvenInflation, inputs, results])
 
   const handleCopy = useCallback(() => {
     if (memo) navigator.clipboard.writeText(memo)

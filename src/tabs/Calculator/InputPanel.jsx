@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import useDashboardStore from '../../store/dashboardStore'
+import { useFredData } from '../../hooks/useFredData'
 import ScenarioToggle from '../../components/ui/ScenarioToggle'
 import InfoHint from '../../components/ui/InfoHint'
 
@@ -41,6 +42,12 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
   const setInput = useDashboardStore((s) => s.setCalculatorInput)
   const reset    = useDashboardStore((s) => s.resetCalculatorToDefaults)
   const set = useCallback((key) => (val) => setInput(key, val), [setInput])
+
+  // Live FRED macro benchmarks
+  useFredData()
+  const treasury10Y        = useDashboardStore((s) => s.treasury10Y)
+  const fedFunds           = useDashboardStore((s) => s.fedFunds)
+  const breakEvenInflation = useDashboardStore((s) => s.breakEvenInflation)
 
   return (
     <section
@@ -126,6 +133,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
             info="Expected annual increase in electricity price and O&M assumptions."
             value={inputs.escalationRate} onChange={set('escalationRate')}
             min={0} max={0.1} step={0.001} unit="decimal / yr"
+            hint={breakEvenInflation != null ? `FRED 10Y breakeven inflation: ${breakEvenInflation.toFixed(2)}%` : undefined}
           />
         </div>
       </fieldset>
@@ -150,6 +158,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
               info="Loan interest rate used for annual debt service."
               value={inputs.interestRate} onChange={set('interestRate')}
               min={0} max={0.25} step={0.001} unit="decimal / yr"
+              hint={fedFunds != null ? `FRED Fed Funds: ${fedFunds.toFixed(2)}%` : undefined}
             />
             <InputField
               id="loanTermYears" label="Loan Term"
@@ -187,7 +196,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
               info="Required return used to discount future cash flows for NPV and LCOE."
               value={inputs.discountRate ?? 0.08} onChange={set('discountRate')}
               min={0.01} max={0.3} step={0.001} unit="decimal"
-              hint="NPV & LCOE"
+              hint={treasury10Y != null ? `FRED 10Y Treasury: ${treasury10Y.toFixed(2)}%` : 'NPV & LCOE'}
             />
           </div>
         </fieldset>

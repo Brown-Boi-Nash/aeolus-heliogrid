@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { getPolicyForState } from '../constants/statePolicies'
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
@@ -20,6 +21,9 @@ export async function sendGeminiMessage(userMessage, context = {}) {
     selectedState,
     systemSizeKW,
     capacityFactor,
+    treasury10Y,
+    fedFunds,
+    breakEvenInflation,
   } = context
 
   const systemPrompt = `You are an expert renewable energy investment analyst assistant embedded in the Aeolus HelioGrid dashboard.
@@ -37,11 +41,24 @@ LIVE DASHBOARD CONTEXT (use these real numbers in your answers):
 - Modeled NPV: ${npv != null ? `$${(npv / 1_000_000).toFixed(2)}M` : 'not calculated'}
 - Modeled LCOE: ${lcoe != null ? `$${lcoe.toFixed(4)}/kWh` : 'not calculated'}
 - Simple Payback: ${payback != null ? `${payback.toFixed(1)} years` : 'not calculated'}
+- FRED 10Y Treasury Yield: ${treasury10Y != null ? `${treasury10Y.toFixed(2)}% (risk-free rate benchmark)` : 'not loaded'}
+- FRED Fed Funds Rate: ${fedFunds != null ? `${fedFunds.toFixed(2)}%` : 'not loaded'}
+- FRED 10Y Breakeven Inflation: ${breakEvenInflation != null ? `${breakEvenInflation.toFixed(2)}%` : 'not loaded'}
 - Selected State on Map: ${selectedState
     ? energyType === 'wind'
       ? `${selectedState.name} (Wind: ${selectedState.windSpeed?.toFixed(2) ?? 'n/a'} m/s)`
       : `${selectedState.name} (GHI: ${selectedState.ghi?.toFixed(2)} kWh/m²/day)`
     : 'none selected'}
+${(() => {
+  const policy = selectedState?.abbr ? getPolicyForState(selectedState.abbr) : null
+  if (!policy) return ''
+  return `- State RPS: ${policy.rps ?? 'None'}
+- Net Metering: ${policy.netMetering}
+- Property Tax Exemption: ${policy.propertyTax ? 'Yes' : 'No'}
+- Sales Tax Exemption: ${policy.salesTax ? 'Yes' : 'No'}
+- State Incentive: ${policy.stateCredit ?? 'None beyond federal ITC'}
+- Policy Note: ${policy.notes}`
+})()}
 
 GUIDELINES:
 - Always cite data sources (EIA, NREL, NREL ATB, IRS, etc.)
@@ -90,6 +107,9 @@ export async function generateInvestmentMemo(context = {}) {
     debtFraction,
     itcPercent,
     projectLifeYears,
+    treasury10Y,
+    fedFunds,
+    breakEvenInflation,
   } = context
 
   const tech = energyType === 'wind' ? 'Onshore Wind' : 'Utility-Scale Solar PV'
@@ -126,6 +146,21 @@ MARKET CONTEXT:
 - U.S. National Avg Electricity Price: ${nationalElectricityPrice != null ? `$${nationalElectricityPrice.toFixed(3)}/kWh (EIA)` : 'n/a'}
 - State Retail Rate: ${selectedState?.electricityRate != null ? `$${selectedState.electricityRate.toFixed(3)}/kWh (EIA)` : 'n/a'}
 - U.S. Installed ${energyType === 'wind' ? 'Wind' : 'Solar'} Capacity: ${energyType === 'wind' ? (totalWindCapacityGW?.toFixed(0) ?? 'n/a') : (totalSolarCapacityGW?.toFixed(0) ?? 'n/a')} GW (EIA)
+- FRED 10Y Treasury Yield: ${treasury10Y != null ? `${treasury10Y.toFixed(2)}% (risk-free benchmark)` : 'n/a'}
+- FRED Fed Funds Rate: ${fedFunds != null ? `${fedFunds.toFixed(2)}%` : 'n/a'}
+- FRED 10Y Breakeven Inflation: ${breakEvenInflation != null ? `${breakEvenInflation.toFixed(2)}%` : 'n/a'}
+
+${(() => {
+  const policy = selectedState?.abbr ? getPolicyForState(selectedState.abbr) : null
+  if (!policy) return 'STATE POLICY: No state selected — use national federal ITC context only.'
+  return `STATE POLICY (${selectedState.abbr}):
+- RPS: ${policy.rps ?? 'None'}
+- Net Metering: ${policy.netMetering}
+- Property Tax Exemption: ${policy.propertyTax ? 'Yes' : 'No'}
+- Sales Tax Exemption: ${policy.salesTax ? 'Yes' : 'No'}
+- State Incentive: ${policy.stateCredit ?? 'None beyond federal ITC'}
+- Analyst Note: ${policy.notes}`
+})()}
 
 FORMAT YOUR RESPONSE EXACTLY as follows (use these exact section headers, use **bold** for key numbers):
 

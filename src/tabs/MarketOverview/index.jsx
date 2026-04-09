@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useEiaData } from '../../hooks/useEiaData'
+import { useFredData } from '../../hooks/useFredData'
 import useDashboardStore from '../../store/dashboardStore'
 import MetricCard from '../../components/ui/MetricCard'
 import CapacityTrendChart from './CapacityTrendChart'
@@ -48,7 +49,11 @@ function windOutlookLabel(avgPrice, avgWindSpeed) {
 
 export default function MarketOverview() {
   const { data, error, isLoading } = useEiaData()
-  const energyType = useDashboardStore((s) => s.energyType)
+  useFredData()
+  const energyType         = useDashboardStore((s) => s.energyType)
+  const treasury10Y        = useDashboardStore((s) => s.treasury10Y)
+  const fedFunds           = useDashboardStore((s) => s.fedFunds)
+  const breakEvenInflation = useDashboardStore((s) => s.breakEvenInflation)
 
   const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
   const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
@@ -199,6 +204,40 @@ export default function MarketOverview() {
           watermarkIcon={energyType === 'wind' ? 'wind_power' : 'solar_power'}
         />
       </section>
+
+      {/* ── Macro Context Strip ───────────────────────────────────── */}
+      {(treasury10Y != null || fedFunds != null || breakEvenInflation != null) && (
+        <section
+          className="bg-surface-container-low rounded-xl px-5 py-3 flex flex-wrap items-center gap-x-6 gap-y-2"
+          aria-label="Live macroeconomic benchmarks"
+        >
+          <span className="label-caps opacity-50 mr-2">Live Macro · FRED</span>
+          {treasury10Y != null && (
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm text-on-surface-variant"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>account_balance</span>
+              <span className="text-xs font-bold text-on-surface">10Y Treasury</span>
+              <span className="text-xs font-extrabold text-primary tabular-nums">{treasury10Y.toFixed(2)}%</span>
+            </div>
+          )}
+          {fedFunds != null && (
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm text-on-surface-variant"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>percent</span>
+              <span className="text-xs font-bold text-on-surface">Fed Funds</span>
+              <span className="text-xs font-extrabold text-primary tabular-nums">{fedFunds.toFixed(2)}%</span>
+            </div>
+          )}
+          {breakEvenInflation != null && (
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm text-on-surface-variant"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>trending_up</span>
+              <span className="text-xs font-bold text-on-surface">10Y Breakeven Inflation</span>
+              <span className="text-xs font-extrabold text-primary tabular-nums">{breakEvenInflation.toFixed(2)}%</span>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ── Charts ────────────────────────────────────────────────── */}
       <CapacityTrendChart

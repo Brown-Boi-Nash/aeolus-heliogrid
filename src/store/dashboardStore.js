@@ -29,6 +29,17 @@ const useDashboardStore = create(
       }
     }),
 
+    // ─── FRED Macro Slice ────────────────────────────────────────────
+    treasury10Y: null,        // 10-Year Treasury yield (%)
+    fedFunds: null,           // Fed Funds effective rate (%)
+    breakEvenInflation: null, // 10-Year breakeven inflation rate (%)
+
+    setFredData: (data) => set({
+      treasury10Y:        data.treasury10Y,
+      fedFunds:           data.fedFunds,
+      breakEvenInflation: data.breakEvenInflation,
+    }),
+
     // ─── Market Slice ────────────────────────────────────────────────
     nationalElectricityPrice: null,
     totalSolarCapacityGW: null,

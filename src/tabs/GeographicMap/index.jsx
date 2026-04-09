@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import MapContainer from './MapContainer'
+import StatePolicyPanel from './StatePolicyPanel'
 import { useEiaData } from '../../hooks/useEiaData'
 import useDashboardStore from '../../store/dashboardStore'
 import { STATE_METADATA } from '../../constants/stateMetadata'
@@ -37,8 +38,17 @@ function topStates(metadata, statePrices, energyType) {
 
 export default function GeographicMap({ onNavigate }) {
   useEiaData()
-  const energyType = useDashboardStore((s) => s.energyType)
-  const statePrices = useDashboardStore((s) => s.statePrices)
+  const energyType    = useDashboardStore((s) => s.energyType)
+  const statePrices   = useDashboardStore((s) => s.statePrices)
+  const selectedState = useDashboardStore((s) => s.selectedState)
+
+  // Default policy display to Alabama if no state clicked yet
+  const DEFAULT_STATE = useMemo(
+    () => STATE_METADATA.find((s) => s.abbr === 'AL'),
+    []
+  )
+  const policyAbbr = selectedState?.abbr ?? DEFAULT_STATE.abbr
+  const policyName = selectedState?.name ?? DEFAULT_STATE.name
   const topInvestStates = useMemo(
     () => topStates(STATE_METADATA, statePrices, energyType),
     [statePrices, energyType]
@@ -81,6 +91,9 @@ export default function GeographicMap({ onNavigate }) {
       >
         <MapContainer onNavigate={onNavigate} energyType={energyType} />
       </div>
+
+      {/* ── State Policy Panel ───────────────────────────────────── */}
+      <StatePolicyPanel abbr={policyAbbr} name={policyName} />
 
       {/* ── Top States (Horizontal) ───────────────────────────────── */}
       <section className="space-y-3" aria-labelledby="top-states-heading">
