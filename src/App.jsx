@@ -5,6 +5,7 @@ import MarketOverview from './tabs/MarketOverview/index.jsx'
 import Calculator from './tabs/Calculator/index.jsx'
 import ResearchAssistant from './tabs/ResearchAssistant/index.jsx'
 import GeographicMap from './tabs/GeographicMap/index.jsx'
+import EnergyToggle from './components/ui/EnergyToggle.jsx'
 
 const TABS = [
   {
@@ -112,13 +113,15 @@ export default function App() {
             />
           </Tab.Group>
 
-          {/* Live data badge */}
-          <div
-            className="hidden lg:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
-            aria-label="Live market data indicator"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
-            Live Market Data
+          <div className="hidden lg:flex items-center gap-4">
+            <EnergyToggle />
+            <div
+              className="hidden lg:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
+              aria-label="Live market data indicator"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
+              Live Market Data
+            </div>
           </div>
         </div>
       </header>

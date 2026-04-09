@@ -20,7 +20,7 @@ const ChartTooltip = ({ active, payload, label }) => {
   )
 }
 
-export default function CapacityTrendChart({ priceData, capacityData }) {
+export default function CapacityTrendChart({ priceData, capacityData, energyType = 'solar' }) {
   return (
     <section
       className="grid grid-cols-1 xl:grid-cols-2 gap-6"
@@ -78,11 +78,13 @@ export default function CapacityTrendChart({ priceData, capacityData }) {
         </p>
       </div>
 
-      {/* Solar Capacity Growth */}
+      {/* Technology Capacity Growth */}
       <div className="bg-surface-container-low rounded-xl p-6 space-y-5">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-bold text-on-surface text-base">U.S. Solar Capacity Growth</h3>
+            <h3 className="font-bold text-on-surface text-base">
+              U.S. {energyType === 'wind' ? 'Wind' : 'Solar'} Capacity Growth
+            </h3>
             <p className="label-caps mt-0.5">Utility-scale installed · annual GW</p>
           </div>
           <span className="chip-positive bg-surface-container text-on-surface-variant">
@@ -122,7 +124,7 @@ export default function CapacityTrendChart({ priceData, capacityData }) {
           </ResponsiveContainer>
         )}
         <p className="text-[10px] font-bold text-on-surface/30 uppercase tracking-widest">
-          Source: EIA Electric Power Operational Data
+          Source: EIA State Electricity Profiles (Table 4)
         </p>
       </div>
     </section>

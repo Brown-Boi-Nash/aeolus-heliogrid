@@ -1,9 +1,9 @@
 import { Popup } from 'react-map-gl'
 
-export default function StatePopup({ state, onClose, onUseInCalculator, isLoadingNrel }) {
+export default function StatePopup({ state, energyType = 'solar', onClose, onUseInCalculator, isLoadingNrel }) {
   if (!state) return null
 
-  const { name, ghi, electricityRate, capacityFactor, lat, lon } = state
+  const { name, ghi, windSpeed, electricityRate, capacityFactor, lat, lon } = state
 
   return (
     <Popup
@@ -19,20 +19,24 @@ export default function StatePopup({ state, onClose, onUseInCalculator, isLoadin
       <div
         className="bg-surface-container-lowest rounded-xl p-4 min-w-[220px]"
         role="dialog"
-        aria-label={`${name} solar data`}
+        aria-label={`${name} ${energyType} data`}
       >
         {/* Header */}
         <div className="mb-3">
-          <p className="label-caps text-primary mb-0.5">State Solar Profile</p>
+          <p className="label-caps text-primary mb-0.5">
+            State {energyType === 'wind' ? 'Wind' : 'Solar'} Profile
+          </p>
           <h3 className="text-lg font-extrabold text-on-surface">{name}</h3>
         </div>
 
         {/* Metrics */}
         <div className="space-y-2.5">
           <DataRow
-            label="Solar Resource (GHI)"
-            value={ghi != null ? `${ghi.toFixed(2)} kWh/m²/day` : '—'}
-            highlight={ghi >= 5.0}
+            label={energyType === 'wind' ? 'Wind Speed (100m)' : 'Solar Resource (GHI)'}
+            value={energyType === 'wind'
+              ? windSpeed != null ? `${windSpeed.toFixed(2)} m/s` : '—'
+              : ghi != null ? `${ghi.toFixed(2)} kWh/m²/day` : '—'}
+            highlight={energyType === 'wind' ? windSpeed >= 6.5 : ghi >= 5.0}
           />
           <DataRow
             label="Retail Electricity Rate"
@@ -47,7 +51,7 @@ export default function StatePopup({ state, onClose, onUseInCalculator, isLoadin
                   ? `${(capacityFactor * 100).toFixed(1)}%`
                   : '—'
             }
-            highlight={capacityFactor >= 0.22}
+            highlight={energyType === 'wind' ? capacityFactor >= 0.30 : capacityFactor >= 0.22}
           />
         </div>
 

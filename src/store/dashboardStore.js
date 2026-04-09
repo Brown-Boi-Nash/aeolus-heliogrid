@@ -1,12 +1,38 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { FINANCIAL_DEFAULTS } from '../constants/financialDefaults'
+import { WIND_FINANCIAL_DEFAULTS } from '../constants/windDefaults'
 
 const useDashboardStore = create(
   subscribeWithSelector((set, get) => ({
+    // ─── Global Mode ────────────────────────────────────────────────
+    energyType: 'solar', // 'solar' | 'wind'
+
+    setEnergyType: (energyType) => set((state) => {
+      if (!['solar', 'wind'].includes(energyType) || state.energyType === energyType) {
+        return {}
+      }
+      const sourceDefaults = energyType === 'wind' ? WIND_FINANCIAL_DEFAULTS : FINANCIAL_DEFAULTS
+      return {
+        energyType,
+        selectedState: null,
+        selectedStateFips: null,
+        selectedStateAbbr: null,
+        calculatorInputs: {
+          ...state.calculatorInputs,
+          capacityFactor: sourceDefaults.capacityFactor,
+          degradationRate: sourceDefaults.degradationRate,
+          installCostPerW: sourceDefaults.installCostPerW,
+          omCostPerKWPerYear: sourceDefaults.omCostPerKWPerYear,
+          itcPercent: sourceDefaults.itcPercent,
+        },
+      }
+    }),
+
     // ─── Market Slice ────────────────────────────────────────────────
     nationalElectricityPrice: null,
     totalSolarCapacityGW: null,
+    totalWindCapacityGW: null,
     priceTimeSeries: [],
     statePrices: {},
     marketLastFetched: null,
@@ -15,6 +41,7 @@ const useDashboardStore = create(
     setMarketData: (data) => set({
       nationalElectricityPrice: data.nationalElectricityPrice,
       totalSolarCapacityGW: data.totalSolarCapacityGW,
+      totalWindCapacityGW: data.totalWindCapacityGW,
       priceTimeSeries: data.priceTimeSeries ?? [],
       statePrices: data.statePrices ?? {},
       marketLastFetched: new Date().toISOString(),
@@ -58,7 +85,7 @@ const useDashboardStore = create(
     })),
 
     resetCalculatorToDefaults: () => set({
-      calculatorInputs: { ...FINANCIAL_DEFAULTS },
+      calculatorInputs: { ...(get().energyType === 'wind' ? WIND_FINANCIAL_DEFAULTS : FINANCIAL_DEFAULTS) },
       selectedStateFips: null,
       selectedStateAbbr: null,
     }),

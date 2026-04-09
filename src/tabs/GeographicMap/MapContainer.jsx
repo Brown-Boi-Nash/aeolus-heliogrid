@@ -23,7 +23,19 @@ const GHI_COLOR_EXPRESSION = [
   6.2, '#102002',
 ]
 
-export default function MapContainer({ onNavigate }) {
+const WIND_COLOR_EXPRESSION = [
+  'interpolate', ['linear'],
+  ['coalesce', ['get', 'windSpeed'], 4.5],
+  4.5, '#f0f9e8',
+  5.5, '#ccebc5',
+  6.0, '#a8ddb5',
+  6.5, '#43a2ca',
+  7.0, '#1d6fa4',
+  7.5, '#244a3e',
+  8.2, '#102002',
+]
+
+export default function MapContainer({ onNavigate, energyType = 'solar' }) {
   const statePrices            = useDashboardStore((s) => s.statePrices)
   const setSelectedState       = useDashboardStore((s) => s.setSelectedState)
   const applyStateToCalculator = useDashboardStore((s) => s.applyStateToCalculator)
@@ -42,7 +54,7 @@ export default function MapContainer({ onNavigate }) {
       .catch(console.error)
   }, [])
 
-  // Merge GHI data into GeoJSON features
+  // Merge resource data into GeoJSON features
   const enrichedGeoJson = useMemo(() => {
     if (!rawGeoJson?.features) return null
     return {
@@ -59,6 +71,7 @@ export default function MapContainer({ onNavigate }) {
             abbr: meta?.abbr ?? '',
             name: meta?.name ?? f.properties?.name ?? '',
             ghi:  meta?.ghi  ?? null,
+            windSpeed: meta?.windSpeed ?? null,
           },
         }
       }),
@@ -76,28 +89,48 @@ export default function MapContainer({ onNavigate }) {
     const feature = e.features?.[0]
     if (!feature) return
 
-    const { fips, abbr, name, ghi } = feature.properties
+    const { fips, abbr, name, ghi, windSpeed } = feature.properties
     const meta = FIPS_TO_STATE[fips] ?? ABBR_TO_STATE[abbr]
     if (!meta) return
 
     const electricityRate = statePrices[abbr] ?? null
+    const staticCapacityFactor = energyType === 'wind' ? meta.windCF : null
 
     // Open popup immediately with available data
-    setPopup({ ...meta, ghi, electricityRate, capacityFactor: null })
-    setSelectedState({ fips, abbr, name, ghi, electricityRate, capacityFactor: null })
+    setPopup({
+      ...meta,
+      ghi,
+      windSpeed,
+      electricityRate,
+      capacityFactor: staticCapacityFactor,
+    })
+    setSelectedState({
+      fips,
+      abbr,
+      name,
+      ghi,
+      windSpeed,
+      electricityRate,
+      capacityFactor: staticCapacityFactor,
+    })
+
+    if (energyType === 'wind') {
+      setLoadingNrel(false)
+      return
+    }
 
     // Fetch live NREL PVWatts capacity factor
     setLoadingNrel(true)
     try {
       const { capacityFactor } = await fetchPVWatts(meta.lat, meta.lon)
       setPopup((prev) => prev ? { ...prev, capacityFactor } : null)
-      setSelectedState({ fips, abbr, name, ghi, electricityRate, capacityFactor })
+      setSelectedState({ fips, abbr, name, ghi, windSpeed, electricityRate, capacityFactor })
     } catch {
       // silently degrade — popup still shows without capacity factor
     } finally {
       setLoadingNrel(false)
     }
-  }, [statePrices, setSelectedState])
+  }, [statePrices, setSelectedState, energyType])
 
   const handleUseInCalculator = useCallback(() => {
     if (!popup) return
@@ -114,13 +147,13 @@ export default function MapContainer({ onNavigate }) {
 
   // Layer paint properties
   const fillPaint = useMemo(() => ({
-    'fill-color': GHI_COLOR_EXPRESSION,
+    'fill-color': energyType === 'wind' ? WIND_COLOR_EXPRESSION : GHI_COLOR_EXPRESSION,
     'fill-opacity': [
       'case',
       ['==', ['get', 'fips'], hoveredFips ?? ''], 0.95,
       0.72,
     ],
-  }), [hoveredFips])
+  }), [hoveredFips, energyType])
 
   const linePaint = useMemo(() => ({
     'line-color': '#fffcca',
@@ -138,7 +171,7 @@ export default function MapContainer({ onNavigate }) {
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         style={{ width: '100%', height: '100%' }}
-        aria-label="Interactive U.S. solar resource map — click a state for details"
+        aria-label={`Interactive U.S. ${energyType === 'wind' ? 'wind resource' : 'solar resource'} map — click a state for details`}
         reuseMaps
       >
         {enrichedGeoJson && <Source id="us-states" type="geojson" data={enrichedGeoJson}>
@@ -163,15 +196,16 @@ export default function MapContainer({ onNavigate }) {
         {popup && (
           <StatePopup
             state={popup}
+            energyType={energyType}
             onClose={() => setPopup(null)}
             onUseInCalculator={handleUseInCalculator}
-            isLoadingNrel={isLoadingNrel}
+            isLoadingNrel={energyType === 'solar' && isLoadingNrel}
           />
         )}
       </Map>
 
       {/* Legend overlay */}
-      <LegendPanel />
+      <LegendPanel energyType={energyType} />
 
       {/* Applied state toast */}
       {appliedState && (

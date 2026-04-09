@@ -8,6 +8,7 @@ import SensitivityHeatmap from './SensitivityHeatmap'
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
   const selectedStateAbbr = useDashboardStore((s) => s.selectedStateAbbr)
+  const energyType = useDashboardStore((s) => s.energyType)
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -25,7 +26,7 @@ export default function Calculator({ onNavigate }) {
             Project Economics
           </h1>
           <p className="text-on-surface-variant font-medium mt-1">
-            Solar investment return modeling · Instant recalculation
+            {energyType === 'wind' ? 'Wind' : 'Solar'} investment return modeling · Instant recalculation
           </p>
         </div>
 
@@ -55,7 +56,7 @@ export default function Calculator({ onNavigate }) {
       </section>
 
       {/* ── Inputs (full width, horizontal) ──────────────────────── */}
-      <InputPanel selectedStateAbbr={selectedStateAbbr} />
+      <InputPanel selectedStateAbbr={selectedStateAbbr} energyType={energyType} />
 
       {/* ── Outputs + Cash Flow side by side ──────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

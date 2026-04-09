@@ -22,7 +22,15 @@ function ghiLabel(ghi) {
   return 'Low'
 }
 
-function outlookLabel(avgPrice, avgGhi) {
+function windLabel(speed) {
+  if (speed >= 7.5) return 'Exceptional'
+  if (speed >= 6.5) return 'Excellent'
+  if (speed >= 5.5) return 'Good'
+  if (speed >= 4.5) return 'Moderate'
+  return 'Low'
+}
+
+function solarOutlookLabel(avgPrice, avgGhi) {
   if (avgGhi >= 5.0 && avgPrice >= 0.14) return 'Optimal'
   if (avgGhi >= 5.0) return 'High Yield'
   if (avgPrice >= 0.18) return 'Price-Driven'
@@ -30,11 +38,21 @@ function outlookLabel(avgPrice, avgGhi) {
   return 'Developing'
 }
 
+function windOutlookLabel(avgPrice, avgWindSpeed) {
+  if (avgWindSpeed >= 7.0 && avgPrice >= 0.14) return 'Optimal'
+  if (avgWindSpeed >= 7.0) return 'High Yield'
+  if (avgPrice >= 0.18) return 'Price-Driven'
+  if (avgWindSpeed >= 6.0) return 'Growing'
+  return 'Developing'
+}
+
 export default function MarketOverview() {
   const { data, error, isLoading } = useEiaData()
+  const energyType = useDashboardStore((s) => s.energyType)
 
   const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
   const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
+  const totalWindCapacityGW      = useDashboardStore((s) => s.totalWindCapacityGW)
   const priceTimeSeries          = useDashboardStore((s) => s.priceTimeSeries)
   const statePrices              = useDashboardStore((s) => s.statePrices)
   const marketLastFetched        = useDashboardStore((s) => s.marketLastFetched)
@@ -47,7 +65,11 @@ export default function MarketOverview() {
     ? ((latestPrice - priceOneYearAgo) / priceOneYearAgo) * 100
     : null
 
-  const sortedCapacity   = [...(data?.capacityTimeSeries ?? [])].sort((a, b) => b.year.localeCompare(a.year))
+  const selectedCapacitySeries = energyType === 'wind'
+    ? (data?.windCapacityTimeSeries ?? [])
+    : (data?.solarCapacityTimeSeries ?? data?.capacityTimeSeries ?? [])
+
+  const sortedCapacity   = [...selectedCapacitySeries].sort((a, b) => b.year.localeCompare(a.year))
   const latestCap        = sortedCapacity[0]?.capacityGW
   const prevCap          = sortedCapacity[1]?.capacityGW
   const yoyCapacityAdded = latestCap && prevCap ? latestCap - prevCap : null
@@ -56,23 +78,24 @@ export default function MarketOverview() {
     ? new Date(marketLastFetched).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : null
 
-  // GHI lookup from pre-bundled stateMetadata
-  const ghiByAbbr = useMemo(() => {
+  const resourceByAbbr = useMemo(() => {
     const map = {}
-    STATE_METADATA.forEach((s) => { map[s.abbr] = s.ghi })
+    STATE_METADATA.forEach((s) => {
+      map[s.abbr] = energyType === 'wind' ? s.windSpeed : s.ghi
+    })
     return map
-  }, [])
+  }, [energyType])
 
-  // Compute regional averages from live EIA statePrices + pre-bundled NREL GHI
+  // Compute regional averages from live EIA statePrices + pre-bundled resource data
   const regionalRows = useMemo(() => {
     return Object.entries(REGIONS).map(([region, abbrs]) => {
       const prices = abbrs.map((a) => statePrices[a]).filter((p) => p != null)
-      const ghis   = abbrs.map((a) => ghiByAbbr[a]).filter((g) => g != null)
+      const resources = abbrs.map((a) => resourceByAbbr[a]).filter((g) => g != null)
       const avgPrice = prices.length ? prices.reduce((s, v) => s + v, 0) / prices.length : null
-      const avgGhi   = ghis.length   ? ghis.reduce((s, v) => s + v, 0)   / ghis.length   : null
-      return { region, avgPrice, avgGhi }
+      const avgResource = resources.length ? resources.reduce((s, v) => s + v, 0) / resources.length : null
+      return { region, avgPrice, avgResource }
     })
-  }, [statePrices, ghiByAbbr])
+  }, [statePrices, resourceByAbbr])
 
   const hasRegionalData = regionalRows.some((r) => r.avgPrice != null)
 
@@ -92,7 +115,7 @@ export default function MarketOverview() {
             Market Overview
           </h1>
           <p className="text-on-surface-variant font-medium mt-1">
-            U.S. Renewable Energy Sector Analysis
+            U.S. {energyType === 'wind' ? 'Wind' : 'Solar'} Energy Sector Analysis
           </p>
         </div>
         {lastUpdatedStr && (
@@ -135,32 +158,40 @@ export default function MarketOverview() {
           watermarkIcon="bolt"
         />
         <MetricCard
-          label="Installed Solar Capacity"
-          info="Total U.S. installed solar net summer capability in GW. Sourced from EIA State Electricity Profiles (Form EIA-860). Updated annually."
-          value={totalSolarCapacityGW != null ? totalSolarCapacityGW.toFixed(0) : null}
+          info={energyType === 'wind'
+            ? 'Total U.S. installed wind net summer capability in GW. Sourced from EIA State Electricity Profiles (Form EIA-860). Updated annually.'
+            : 'Total U.S. installed solar net summer capability in GW. Sourced from EIA State Electricity Profiles (Form EIA-860). Updated annually.'}
+          label={energyType === 'wind' ? 'Installed Wind Capacity' : 'Installed Solar Capacity'}
+          value={(energyType === 'wind' ? totalWindCapacityGW : totalSolarCapacityGW) != null
+            ? (energyType === 'wind' ? totalWindCapacityGW : totalSolarCapacityGW).toFixed(0)
+            : null}
           unit="GW"
           delta={yoyCapacityAdded}
           deltaLabel="GW added"
           source="vs prev. year · EIA"
           isLoading={isLoading}
-          isError={!!error && !totalSolarCapacityGW}
+          isError={!!error && !(energyType === 'wind' ? totalWindCapacityGW : totalSolarCapacityGW)}
           watermarkIcon="wind_power"
         />
         <MetricCard
           label="Federal ITC Rate"
-          info="Investment Tax Credit under the Inflation Reduction Act (IRA) 2022. Applies to solar projects placed in service through 2032. Source: IRS / U.S. Treasury."
-          value="30%"
+          info={energyType === 'wind'
+            ? 'Federal tax incentives for wind under IRA 2022 support either ITC or PTC pathways, depending on project election.'
+            : 'Investment Tax Credit under the Inflation Reduction Act (IRA) 2022. Applies to solar projects placed in service through 2032. Source: IRS / U.S. Treasury.'}
+          value={energyType === 'wind' ? 'ITC/PTC' : '30%'}
           unit=""
-          source="IRA 2022 · through 2032"
+          source={energyType === 'wind' ? 'IRA 2022 · technology elective' : 'IRA 2022 · through 2032'}
           isLoading={false}
           isError={false}
           accentVariant="hero"
           watermarkIcon="policy"
         />
         <MetricCard
-          label="Utility Solar LCOE Range"
-          info="Levelized Cost of Energy for utility-scale PV in the U.S., representing the range from low-resource to high-resource sites. Source: NREL Annual Technology Baseline 2024."
-          value="$0.033–$0.068"
+          label={`Utility ${energyType === 'wind' ? 'Wind' : 'Solar'} LCOE Range`}
+          info={energyType === 'wind'
+            ? 'Levelized Cost of Energy benchmark for utility-scale onshore wind in the U.S. Source: NREL Annual Technology Baseline 2024.'
+            : 'Levelized Cost of Energy for utility-scale PV in the U.S., representing the range from low-resource to high-resource sites. Source: NREL Annual Technology Baseline 2024.'}
+          value={energyType === 'wind' ? '$0.033–$0.054' : '$0.033–$0.068'}
           unit="/ kWh"
           source="NREL ATB 2024"
           isLoading={false}
@@ -172,7 +203,8 @@ export default function MarketOverview() {
       {/* ── Charts ────────────────────────────────────────────────── */}
       <CapacityTrendChart
         priceData={isLoading ? [] : priceTimeSeries}
-        capacityData={isLoading ? [] : (data?.capacityTimeSeries ?? [])}
+        capacityData={isLoading ? [] : selectedCapacitySeries}
+        energyType={energyType}
       />
 
       {/* ── Regional Table ────────────────────────────────────────── */}
@@ -187,7 +219,7 @@ export default function MarketOverview() {
             </h2>
             <p className="label-caps mt-0.5 opacity-60">
               {hasRegionalData
-                ? 'Live EIA state prices · NREL NSRDB irradiance'
+                ? `Live EIA state prices · ${energyType === 'wind' ? 'pre-bundled wind speed dataset' : 'NREL NSRDB irradiance'}`
                 : 'Loading regional data…'}
             </p>
           </div>
@@ -197,7 +229,13 @@ export default function MarketOverview() {
           <table className="w-full text-left" aria-label="Regional market performance">
             <thead>
               <tr className="bg-surface-container-high">
-                {['Region', 'Avg Price ($/kWh)', 'Avg GHI (kWh/m²/day)', 'Solar Resource', 'Outlook'].map((h) => (
+                {[
+                  'Region',
+                  'Avg Price ($/kWh)',
+                  energyType === 'wind' ? 'Avg Wind Speed (m/s)' : 'Avg GHI (kWh/m²/day)',
+                  energyType === 'wind' ? 'Wind Resource' : 'Solar Resource',
+                  'Outlook',
+                ].map((h) => (
                   <th key={h} scope="col" className="px-6 py-4 label-caps">{h}</th>
                 ))}
               </tr>
@@ -213,15 +251,19 @@ export default function MarketOverview() {
                     {row.avgPrice != null ? `$${row.avgPrice.toFixed(3)}` : '—'}
                   </td>
                   <td className="px-6 py-4 font-mono text-sm text-on-surface tabular-nums">
-                    {row.avgGhi != null ? row.avgGhi.toFixed(2) : '—'}
+                    {row.avgResource != null ? row.avgResource.toFixed(2) : '—'}
                   </td>
                   <td className="px-6 py-4 text-sm text-on-surface-variant font-medium">
-                    {row.avgGhi != null ? ghiLabel(row.avgGhi) : '—'}
+                    {row.avgResource != null
+                      ? (energyType === 'wind' ? windLabel(row.avgResource) : ghiLabel(row.avgResource))
+                      : '—'}
                   </td>
                   <td className="px-6 py-4">
-                    {row.avgPrice != null && row.avgGhi != null ? (
+                    {row.avgPrice != null && row.avgResource != null ? (
                       <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-                        {outlookLabel(row.avgPrice, row.avgGhi)}
+                        {energyType === 'wind'
+                          ? windOutlookLabel(row.avgPrice, row.avgResource)
+                          : solarOutlookLabel(row.avgPrice, row.avgResource)}
                       </span>
                     ) : '—'}
                   </td>

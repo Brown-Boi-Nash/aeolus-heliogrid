@@ -45,6 +45,24 @@ export async function fetchSolarCapacityTrend() {
   return json?.response?.data ?? []
 }
 
+// Annual U.S. installed wind capacity (net summer capability, MW) for last 10 years
+export async function fetchWindCapacityTrend() {
+  const url = buildUrl('/electricity/state-electricity-profiles/capability/data/', {
+    'frequency': 'annual',
+    'data[0]': 'capability',
+    'facets[stateId][]': 'US',
+    'facets[energysourceid][]': 'WND',
+    'facets[producertypeid][]': 'TOT',
+    'sort[0][column]': 'period',
+    'sort[0][direction]': 'desc',
+    'length': '10',
+  })
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`EIA wind capacity fetch failed: ${res.status}`)
+  const json = await res.json()
+  return json?.response?.data ?? []
+}
+
 // Latest electricity price for every state
 export async function fetchStatePrices() {
   const url = buildUrl('/electricity/retail-sales/data/', {

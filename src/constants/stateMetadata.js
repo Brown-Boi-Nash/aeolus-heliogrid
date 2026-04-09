@@ -1,6 +1,6 @@
 // State centroids (lat/lon), FIPS codes, and pre-fetched NREL GHI values (kWh/m²/day)
 // GHI values sourced from NREL National Solar Radiation Database state averages
-export const STATE_METADATA = [
+const BASE_STATE_METADATA = [
   { abbr: 'AL', fips: '01', name: 'Alabama',              lat: 32.8,  lon: -86.8,  ghi: 4.92 },
   { abbr: 'AK', fips: '02', name: 'Alaska',               lat: 64.2,  lon: -153.4, ghi: 2.80 },
   { abbr: 'AZ', fips: '04', name: 'Arizona',              lat: 34.3,  lon: -111.1, ghi: 5.93 },
@@ -53,6 +53,34 @@ export const STATE_METADATA = [
   { abbr: 'WY', fips: '56', name: 'Wyoming',              lat: 43.0,  lon: -107.6, ghi: 5.19 },
   { abbr: 'DC', fips: '11', name: 'District of Columbia', lat: 38.9,  lon: -77.0,  ghi: 4.37 },
 ]
+
+// Approximate annual average wind speed at 100m (m/s) by state.
+// Source basis: NREL Wind Toolkit state-level patterns, simplified for dashboard use.
+const WIND_SPEED_BY_ABBR = {
+  AL: 5.3, AK: 6.8, AZ: 5.9, AR: 5.5, CA: 6.1, CO: 6.9, CT: 5.2, DE: 5.8,
+  FL: 5.1, GA: 5.0, HI: 6.7, ID: 6.2, IL: 6.6, IN: 6.2, IA: 7.2, KS: 7.8,
+  KY: 5.7, LA: 5.4, ME: 6.3, MD: 5.7, MA: 5.9, MI: 6.5, MN: 7.1, MS: 5.2,
+  MO: 6.3, MT: 7.5, NE: 7.6, NV: 6.4, NH: 5.7, NJ: 5.8, NM: 6.8, NY: 6.0,
+  NC: 5.6, ND: 8.0, OH: 5.9, OK: 7.7, OR: 6.6, PA: 5.8, RI: 6.0, SC: 5.2,
+  SD: 7.8, TN: 5.4, TX: 7.1, UT: 6.3, VT: 5.8, VA: 5.6, WA: 6.5, WV: 5.5,
+  WI: 6.6, WY: 7.9, DC: 5.3,
+}
+
+function windCfFromSpeed(speed) {
+  if (speed < 5.5) return 0.25
+  if (speed < 6.5) return 0.30
+  if (speed < 7.5) return 0.35
+  return 0.42
+}
+
+export const STATE_METADATA = BASE_STATE_METADATA.map((state) => {
+  const windSpeed = WIND_SPEED_BY_ABBR[state.abbr] ?? 5.5
+  return {
+    ...state,
+    windSpeed,
+    windCF: windCfFromSpeed(windSpeed),
+  }
+})
 
 // Quick lookup maps
 export const FIPS_TO_STATE = Object.fromEntries(STATE_METADATA.map((s) => [s.fips, s]))

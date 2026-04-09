@@ -36,7 +36,7 @@ function InputField({ label, info, id, value, onChange, min, max, step = 'any', 
   )
 }
 
-export default function InputPanel({ selectedStateAbbr }) {
+export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) {
   const inputs   = useDashboardStore((s) => s.calculatorInputs)
   const setInput = useDashboardStore((s) => s.setCalculatorInput)
   const reset    = useDashboardStore((s) => s.resetCalculatorToDefaults)
@@ -53,7 +53,9 @@ export default function InputPanel({ selectedStateAbbr }) {
           <h2 className="font-bold text-on-surface text-base uppercase tracking-wider">
             Input Parameters
           </h2>
-          <p className="label-caps opacity-60">Configure project baseline assumptions</p>
+          <p className="label-caps opacity-60">
+            Configure {energyType === 'wind' ? 'wind' : 'solar'} project baseline assumptions
+          </p>
           {selectedStateAbbr && (
             <div className="flex items-center gap-1.5 pt-1">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />

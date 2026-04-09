@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import {
   fetchNationalElectricityPrice,
   fetchSolarCapacityTrend,
+  fetchWindCapacityTrend,
   fetchStatePrices,
 } from '../lib/eiaClient'
 import {
@@ -15,17 +16,21 @@ import {
 import useDashboardStore from '../store/dashboardStore'
 
 async function fetchAllEiaData() {
-  const [priceRows, capacityRows, statePriceRows] = await Promise.all([
+  const [priceRows, solarCapacityRows, windCapacityRows, statePriceRows] = await Promise.all([
     fetchNationalElectricityPrice(),
     fetchSolarCapacityTrend(),
+    fetchWindCapacityTrend(),
     fetchStatePrices(),
   ])
 
   return {
     nationalElectricityPrice: extractNationalPrice(priceRows),
     priceTimeSeries: normalizeEiaPriceSeries(priceRows),
-    totalSolarCapacityGW: extractTotalCapacity(capacityRows),
-    capacityTimeSeries: normalizeCapacitySeries(capacityRows),
+    totalSolarCapacityGW: extractTotalCapacity(solarCapacityRows),
+    totalWindCapacityGW: extractTotalCapacity(windCapacityRows),
+    solarCapacityTimeSeries: normalizeCapacitySeries(solarCapacityRows),
+    windCapacityTimeSeries: normalizeCapacitySeries(windCapacityRows),
+    capacityTimeSeries: normalizeCapacitySeries(solarCapacityRows),
     statePrices: normalizeStatePrices(statePriceRows),
   }
 }

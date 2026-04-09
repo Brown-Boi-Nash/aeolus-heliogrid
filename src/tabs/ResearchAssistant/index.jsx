@@ -32,6 +32,8 @@ export default function ResearchAssistant() {
   // Gather live context from store
   const nationalElectricityPrice = useDashboardStore((s) => s.nationalElectricityPrice)
   const totalSolarCapacityGW     = useDashboardStore((s) => s.totalSolarCapacityGW)
+  const totalWindCapacityGW      = useDashboardStore((s) => s.totalWindCapacityGW)
+  const energyType               = useDashboardStore((s) => s.energyType)
   const selectedState            = useDashboardStore((s) => s.selectedState)
   const { inputs, results }      = useCalculator()
 
@@ -46,6 +48,8 @@ export default function ResearchAssistant() {
     return {
       nationalElectricityPrice,
       totalSolarCapacityGW,
+      totalWindCapacityGW,
+      energyType,
       irr:          results.irr,
       npv:          results.npv,
       lcoe:         results.lcoe,
@@ -55,7 +59,7 @@ export default function ResearchAssistant() {
       capacityFactor: adjusted.capacityFactor,
       selectedState,
     }
-  }, [nationalElectricityPrice, totalSolarCapacityGW, inputs, results, selectedState])
+  }, [nationalElectricityPrice, totalSolarCapacityGW, totalWindCapacityGW, energyType, inputs, results, selectedState])
 
   const sendMessage = useCallback(async (text) => {
     const trimmed = (text ?? inputText).trim()
@@ -111,7 +115,9 @@ export default function ResearchAssistant() {
               </div>
               <div>
                 <h1 className="font-bold text-on-surface text-sm">Research Assistant</h1>
-                <p className="label-caps opacity-60">Powered by Gemini 2.5 Flash Lite · Live data context</p>
+                <p className="label-caps opacity-60">
+                  Powered by Gemini 2.5 Flash Lite · {energyType === 'wind' ? 'Wind' : 'Solar'} mode
+                </p>
               </div>
             </div>
             {chatMessages.length > 0 && (
@@ -141,7 +147,8 @@ export default function ResearchAssistant() {
                 <div>
                   <h2 className="text-xl font-extrabold text-on-surface mb-1">Ask about your investment</h2>
                   <p className="text-sm text-on-surface-variant max-w-sm">
-                    I have access to your live EIA data, NREL solar resource, and current calculator scenario.
+                    I have access to your live EIA data, map resource context, and current calculator scenario.
+                    {' '}
                     Try a question from the panel →
                   </p>
                 </div>
@@ -223,7 +230,7 @@ export default function ResearchAssistant() {
               <ContextCard
                 title="Calculator Scenario"
                 value={inputs.scenario.charAt(0).toUpperCase() + inputs.scenario.slice(1)}
-                sub={results.irr != null ? `IRR: ${(results.irr * 100).toFixed(1)}%` : 'IRR: not calculated'}
+                sub={`${energyType === 'wind' ? 'Wind' : 'Solar'} · ${results.irr != null ? `IRR: ${(results.irr * 100).toFixed(1)}%` : 'IRR: not calculated'}`}
                 accent
               />
               {nationalElectricityPrice && (
@@ -236,7 +243,9 @@ export default function ResearchAssistant() {
               {selectedState && (
                 <ContextCard
                   title={`${selectedState.name} on Map`}
-                  value={`GHI ${selectedState.ghi?.toFixed(2)} kWh/m²/day`}
+                  value={energyType === 'wind'
+                    ? `Wind ${selectedState.windSpeed?.toFixed(2) ?? '—'} m/s`
+                    : `GHI ${selectedState.ghi?.toFixed(2)} kWh/m²/day`}
                   sub={selectedState.capacityFactor
                     ? `Cap. Factor: ${(selectedState.capacityFactor * 100).toFixed(1)}%`
                     : 'Click "Use in Calculator" on map'}
