@@ -111,6 +111,8 @@ export async function generateInvestmentMemo(context = {}) {
     fedFunds,
     breakEvenInflation,
     esg,
+    useMacrs,
+    corporateTaxRate,
   } = context
 
   const tech = energyType === 'wind' ? 'Onshore Wind' : 'Utility-Scale Solar PV'
@@ -136,6 +138,7 @@ PROJECT DATA:
 - Federal ITC: ${itcPercent != null ? `${(itcPercent * 100).toFixed(0)}%` : 'n/a'}
 - Project Life: ${projectLifeYears ?? 25} years
 - Scenario: ${scenario ?? 'base'}
+- MACRS Depreciation: ${useMacrs ? `Enabled — IRS 5-year schedule (20/32/19.2/11.52/11.52/5.76%), depreciable basis = CapEx × ${itcPercent != null ? (1 - 0.5 * itcPercent).toFixed(2) : '0.85'} (§168(k) basis adjustment), corporate tax rate ${corporateTaxRate != null ? `${(corporateTaxRate * 100).toFixed(0)}%` : '21%'}` : 'Disabled'}
 
 FINANCIAL RETURNS:
 - IRR: ${irr != null ? `${(irr * 100).toFixed(2)}%` : 'not calculated'}

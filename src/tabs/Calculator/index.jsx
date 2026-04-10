@@ -57,6 +57,8 @@ export default function Calculator({ onNavigate }) {
         fedFunds,
         breakEvenInflation,
         esg,
+        useMacrs:          inputs.useMacrs,
+        corporateTaxRate:  inputs.corporateTaxRate,
       })
       setMemo(text)
     } catch (err) {
@@ -162,10 +164,13 @@ export default function Calculator({ onNavigate }) {
       >
         <p className="label-caps text-primary mb-1">Methodology</p>
         <p className="text-xs text-on-surface-variant leading-relaxed">
-          IRR solved via bisection (Newton-Raphson). NPV discounted at user-specified rate.
-          LCOE = (discounted lifetime costs) / (discounted lifetime energy production).
-          Cash flows modeled as equity perspective — Year 0 is net equity outflow after ITC.
-          Capacity factor and electricity rate auto-fill from Geographic Map (cross-tab flow) or EIA national average.
+          IRR solved via bisection. NPV discounted at user-specified rate.
+          LCOE = (discounted lifetime costs − MACRS tax shields) / (discounted lifetime energy).
+          Cash flows modeled as equity perspective — Year 0 is net equity outflow after ITC.{' '}
+          {inputs.useMacrs
+            ? `MACRS: IRS 5-year schedule (20/32/19.2/11.52/11.52/5.76%) applied to depreciable basis of $${((inputs.systemSizeKW * 1000 * inputs.installCostPerW) * (1 - 0.5 * inputs.itcPercent) / 1_000_000).toFixed(2)}M (CapEx less 50% of ITC per §168(k)). Tax shields at ${((inputs.corporateTaxRate ?? 0.21) * 100).toFixed(0)}% corporate rate added to cash flows in years 1–6.`
+            : 'MACRS depreciation is currently disabled.'}
+          {' '}Capacity factor and electricity rate auto-fill from Geographic Map or EIA national average.
         </p>
       </section>
 

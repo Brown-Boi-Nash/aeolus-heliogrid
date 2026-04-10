@@ -179,7 +179,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
         <div className="hidden md:block w-px bg-on-surface/5 self-stretch" aria-hidden="true" />
 
         {/* Policy & Tax */}
-        <fieldset className="md:min-w-[240px]">
+        <fieldset className="md:min-w-[280px]">
           <legend className="label-caps text-primary border-b border-on-surface/5 pb-1 w-full block mb-4">
             Policy &amp; Tax
           </legend>
@@ -198,6 +198,41 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
               min={0.01} max={0.3} step={0.001} unit="decimal"
               hint={treasury10Y != null ? `FRED 10Y Treasury: ${treasury10Y.toFixed(2)}%` : 'NPV & LCOE'}
             />
+            <InputField
+              id="corporateTaxRate" label="Corp. Tax Rate"
+              info="Federal corporate income tax rate applied to MACRS depreciation deductions. TCJA 2017 rate is 21%."
+              value={inputs.corporateTaxRate ?? 0.21} onChange={set('corporateTaxRate')}
+              min={0} max={0.5} step={0.01} unit="decimal"
+              hint="TCJA 2017: 21%"
+            />
+            {/* MACRS toggle */}
+            <div className="space-y-1.5">
+              <span className="label-caps flex items-center gap-1.5">
+                MACRS Depreciation
+                <InfoHint
+                  text="IRS 5-year MACRS accelerated depreciation for solar/wind (Rev. Proc. 87-56). Basis reduced by 50% of ITC per §168(k). Schedule: 20/32/19.2/11.52/11.52/5.76% over 6 years. Tax shields added to cash flows in years 1–6."
+                  label="MACRS info"
+                />
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={!!inputs.useMacrs}
+                onClick={() => setInput('useMacrs', !inputs.useMacrs)}
+                className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  inputs.useMacrs ? 'bg-primary' : 'bg-on-surface/20'
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    inputs.useMacrs ? 'translate-x-8' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <p className="text-[10px] text-on-surface/40 font-medium">
+                {inputs.useMacrs ? 'On — tax shields in yrs 1–6' : 'Off — straight-line only'}
+              </p>
+            </div>
           </div>
         </fieldset>
 

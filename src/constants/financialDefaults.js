@@ -13,6 +13,9 @@ export const FINANCIAL_DEFAULTS = {
   itcPercent: 0.30,
   discountRate: 0.08,
   scenario: 'base',
+  // Tax
+  useMacrs: true,
+  corporateTaxRate: 0.21,
 }
 
 export const SCENARIO_MULTIPLIERS = {
