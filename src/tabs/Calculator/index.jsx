@@ -136,6 +136,11 @@ export default function Calculator({ onNavigate }) {
           isGenerating={isGenerating}
           onClose={() => setShowMemo(false)}
           onCopy={handleCopy}
+          printMeta={{
+            projectName: `${inputs.systemSizeKW.toLocaleString()} kW ${energyType === 'wind' ? 'Wind' : 'Solar'} — ${selectedState?.name ?? 'U.S.'}`,
+            state: selectedState ? `${selectedState.name} (${selectedState.abbr})` : 'U.S. (no state selected)',
+            energyType,
+          }}
         />
       )}
 

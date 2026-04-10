@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
+import { printMemo } from '../../lib/printMemo'
 
 /**
  * Renders a markdown-ish investment memo string into structured HTML sections.
@@ -53,8 +54,12 @@ function renderMemo(text) {
   })
 }
 
-export default function MemoModal({ memo, isGenerating, onClose, onCopy }) {
+export default function MemoModal({ memo, isGenerating, onClose, onCopy, printMeta }) {
   const dialogRef = useRef(null)
+
+  const handleExportPdf = useCallback(() => {
+    if (memo) printMemo(memo, printMeta)
+  }, [memo, printMeta])
 
   // Trap focus and close on Escape
   useEffect(() => {
@@ -100,14 +105,24 @@ export default function MemoModal({ memo, isGenerating, onClose, onCopy }) {
           </div>
           <div className="flex items-center gap-2">
             {memo && !isGenerating && (
-              <button
-                onClick={onCopy}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-on-surface/60 hover:text-primary hover:bg-surface-container transition-colors"
-                aria-label="Copy memo to clipboard"
-              >
-                <span className="material-symbols-outlined text-sm">content_copy</span>
-                Copy
-              </button>
+              <>
+                <button
+                  onClick={handleExportPdf}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-on-surface/60 hover:text-primary hover:bg-surface-container transition-colors"
+                  aria-label="Export memo as PDF"
+                >
+                  <span className="material-symbols-outlined text-sm">picture_as_pdf</span>
+                  Export PDF
+                </button>
+                <button
+                  onClick={onCopy}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-on-surface/60 hover:text-primary hover:bg-surface-container transition-colors"
+                  aria-label="Copy memo to clipboard"
+                >
+                  <span className="material-symbols-outlined text-sm">content_copy</span>
+                  Copy
+                </button>
+              </>
             )}
             <button
               onClick={onClose}
