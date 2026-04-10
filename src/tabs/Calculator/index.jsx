@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import useDashboardStore from '../../store/dashboardStore'
 import { useCalculator } from '../../hooks/useCalculator'
 import InputPanel from './InputPanel'
@@ -7,6 +7,7 @@ import CashFlowSection from './CashFlowSection'
 import SensitivityHeatmap from './SensitivityHeatmap'
 import MemoModal from './MemoModal'
 import { generateInvestmentMemo } from '../../lib/geminiClient'
+import { computeEsg } from '../../lib/esgCalc'
 
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
@@ -19,6 +20,11 @@ export default function Calculator({ onNavigate }) {
   const treasury10Y              = useDashboardStore((s) => s.treasury10Y)
   const fedFunds                 = useDashboardStore((s) => s.fedFunds)
   const breakEvenInflation       = useDashboardStore((s) => s.breakEvenInflation)
+
+  const esg = useMemo(
+    () => computeEsg(inputs, selectedState?.abbr),
+    [inputs, selectedState?.abbr],
+  )
 
   const [showMemo, setShowMemo]         = useState(false)
   const [memo, setMemo]                 = useState(null)
@@ -50,6 +56,7 @@ export default function Calculator({ onNavigate }) {
         treasury10Y,
         fedFunds,
         breakEvenInflation,
+        esg,
       })
       setMemo(text)
     } catch (err) {

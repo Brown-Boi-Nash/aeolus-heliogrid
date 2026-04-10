@@ -110,6 +110,7 @@ export async function generateInvestmentMemo(context = {}) {
     treasury10Y,
     fedFunds,
     breakEvenInflation,
+    esg,
   } = context
 
   const tech = energyType === 'wind' ? 'Onshore Wind' : 'Utility-Scale Solar PV'
@@ -162,6 +163,12 @@ ${(() => {
 - Analyst Note: ${policy.notes}`
 })()}
 
+${esg ? `ESG & CLIMATE IMPACT (EPA eGRID 2022 · computed from project inputs):
+- ESG Grade: ${esg.grade} (${esg.label}) — Score ${esg.score}/100
+- Annual CO₂ Offset: ${esg.co2Tonnes >= 1000 ? `${(esg.co2Tonnes / 1000).toFixed(1)}k` : Math.round(esg.co2Tonnes)} tonnes/yr
+- Equivalent Passenger Cars Removed: ${esg.carsEquivalent.toLocaleString()} (EPA: 4.6 t CO₂/car/yr)
+- Homes Powered Annually: ${esg.homesPowered.toLocaleString()} (EIA: 10,500 kWh/home/yr)` : ''}
+
 FORMAT YOUR RESPONSE EXACTLY as follows (use these exact section headers, use **bold** for key numbers):
 
 ## Executive Summary
@@ -179,10 +186,13 @@ IRR, NPV, LCOE, payback. Benchmark against NREL ATB and market comparables. 3-4 
 ## Policy & Incentives
 ITC/PTC context, IRA 2022 relevance, any state-level considerations. 2-3 sentences.
 
+## ESG & Climate Impact
+Reference the computed CO₂ offset, homes powered, and ESG grade. Contextualize within ESG investing trends and institutional mandates. 2-3 sentences.
+
 ## Recommendation
 1-2 sentences. Clear action: proceed to due diligence / revise assumptions / pass.
 
-Data sources: EIA, NREL, NREL ATB 2024, IRS/IRA 2022.`
+Data sources: EIA, NREL, NREL ATB 2024, IRS/IRA 2022, EPA eGRID 2022.`
 
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash-lite',
