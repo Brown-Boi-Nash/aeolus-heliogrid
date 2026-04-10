@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Tab } from '@headlessui/react'
+import { Joyride, STATUS } from 'react-joyride'
 import clsx from 'clsx'
 import MarketOverview from './tabs/MarketOverview/index.jsx'
 import Calculator from './tabs/Calculator/index.jsx'
 import ResearchAssistant from './tabs/ResearchAssistant/index.jsx'
 import GeographicMap from './tabs/GeographicMap/index.jsx'
 import EnergyToggle from './components/ui/EnergyToggle.jsx'
+import WelcomeModal, { STORAGE_KEY } from './components/onboarding/WelcomeModal.jsx'
+import { TOUR_STEPS } from './components/onboarding/tourSteps.js'
 
 const TABS = [
   {
@@ -13,6 +16,7 @@ const TABS = [
     label: 'Market Overview',
     shortLabel: 'Market',
     icon: 'analytics',
+    tourAttr: 'tab-market',
     component: MarketOverview,
   },
   {
@@ -20,6 +24,7 @@ const TABS = [
     label: 'Project Economics',
     shortLabel: 'Economics',
     icon: 'calculate',
+    tourAttr: 'tab-economics',
     component: Calculator,
   },
   {
@@ -27,6 +32,7 @@ const TABS = [
     label: 'Research Assistant',
     shortLabel: 'Research',
     icon: 'auto_awesome',
+    tourAttr: 'tab-assistant',
     component: ResearchAssistant,
   },
   {
@@ -34,34 +40,148 @@ const TABS = [
     label: 'Geographic Map',
     shortLabel: 'Map',
     icon: 'map',
+    tourAttr: 'tab-map',
     component: GeographicMap,
   },
 ]
 
+// Joyride custom styles — match the dashboard design system
+const JOYRIDE_STYLES = {
+  options: {
+    primaryColor: 'var(--color-primary, #2d6a4f)',
+    backgroundColor: 'var(--color-surface-container, #f4f9f6)',
+    textColor: 'var(--color-on-surface, #1b2e25)',
+    arrowColor: 'var(--color-surface-container, #f4f9f6)',
+    zIndex: 10000,
+  },
+  tooltip: {
+    borderRadius: '16px',
+    padding: '20px 24px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+    maxWidth: 360,
+  },
+  tooltipTitle: {
+    fontSize: '15px',
+    fontWeight: 800,
+    letterSpacing: '-0.01em',
+    marginBottom: '8px',
+  },
+  tooltipContent: {
+    fontSize: '13px',
+    lineHeight: '1.6',
+  },
+  buttonNext: {
+    borderRadius: '10px',
+    fontWeight: 700,
+    fontSize: '13px',
+    padding: '8px 18px',
+  },
+  buttonBack: {
+    color: 'var(--color-on-surface, #1b2e25)',
+    fontWeight: 600,
+    fontSize: '13px',
+  },
+  buttonSkip: {
+    color: 'var(--color-on-surface, #1b2e25)',
+    fontSize: '12px',
+  },
+  spotlight: {
+    borderRadius: '12px',
+  },
+}
+
+function hasSeenTour() {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function markTourSeen() {
+  try {
+    localStorage.setItem(STORAGE_KEY, '1')
+  } catch {}
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState(0)
 
+  // Welcome modal: show if the user hasn't seen the tour yet
+  const [showWelcome, setShowWelcome] = useState(() => !hasSeenTour())
+  const [runTour, setRunTour] = useState(false)
+
+  const handleStartTour = useCallback(() => {
+    markTourSeen()
+    setShowWelcome(false)
+    setRunTour(true)
+  }, [])
+
+  const handleSkip = useCallback(() => {
+    markTourSeen()
+    setShowWelcome(false)
+  }, [])
+
+  const handleRestartTour = useCallback(() => {
+    setRunTour(false)
+    // Small delay to let Joyride reset before re-running
+    setTimeout(() => setRunTour(true), 50)
+  }, [])
+
+  const handleJoyrideCallback = useCallback(({ status }) => {
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      setRunTour(false)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-surface text-on-surface flex flex-col">
+      {/* First-time welcome prompt */}
+      {showWelcome && (
+        <WelcomeModal onStartTour={handleStartTour} onSkip={handleSkip} />
+      )}
+
+      {/* Guided tour */}
+      <Joyride
+        steps={TOUR_STEPS}
+        run={runTour}
+        continuous
+        showSkipButton
+        showProgress
+        scrollToFirstStep
+        styles={JOYRIDE_STYLES}
+        locale={{
+          back: 'Back',
+          close: 'Close',
+          last: 'Done',
+          next: 'Next',
+          skip: 'Skip tour',
+        }}
+        callback={handleJoyrideCallback}
+      />
+
       {/* Accessibility: skip to main content */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
 
       {/* ── Glassmorphism Top Nav ──────────────────────────────────── */}
-      <header
-        className="glass-nav sticky top-0 z-50"
-        role="banner"
-      >
+      <header className="glass-nav sticky top-0 z-50" role="banner">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
           {/* Brand */}
-          <div className="flex items-center gap-3" aria-label="Aeolus HelioGrid">
+          <div
+            className="flex items-center gap-3"
+            aria-label="Aeolus HelioGrid"
+            data-tour="brand"
+          >
             <div
               className="w-8 h-8 rounded-xl bg-botanical-gradient flex items-center justify-center"
               aria-hidden="true"
             >
-              <span className="material-symbols-outlined text-white text-lg"
-                style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}>
+              <span
+                className="material-symbols-outlined text-white text-lg"
+                style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
                 wind_power
               </span>
             </div>
@@ -82,6 +202,7 @@ export default function App() {
               {TABS.map((tab) => (
                 <Tab
                   key={tab.id}
+                  data-tour={tab.tourAttr}
                   className={({ selected }) =>
                     clsx(
                       'flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold uppercase tracking-widest transition-colors duration-200 rounded-lg',
@@ -114,13 +235,36 @@ export default function App() {
           </Tab.Group>
 
           <div className="hidden lg:flex items-center gap-4">
-            <EnergyToggle />
-            <div
-              className="hidden lg:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
-              aria-label="Live market data indicator"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
-              Live Market Data
+            <div data-tour="energy-toggle">
+              <EnergyToggle />
+            </div>
+
+            {/* Live data badge + Tour trigger */}
+            <div className="hidden lg:flex items-center gap-3">
+              <div
+                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
+                aria-label="Live market data indicator"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
+                Live Market Data
+              </div>
+
+              {/* Tour restart button */}
+              <button
+                onClick={handleRestartTour}
+                title="Restart tour"
+                aria-label="Restart guided tour"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-on-surface/40 hover:text-primary hover:bg-primary/5 transition-colors"
+              >
+                <span
+                  className="material-symbols-outlined text-sm"
+                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+                  aria-hidden="true"
+                >
+                  tour
+                </span>
+                Tour
+              </button>
             </div>
           </div>
         </div>
@@ -181,7 +325,7 @@ export default function App() {
       >
         <div className="max-w-[1440px] mx-auto px-6 lg:px-8 text-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/40">
-            Data: EIA Open Data API · NREL Developer API · Google Gemini AI · Mapbox
+            Data: EIA Open Data API · NREL Developer API · Google Gemini AI · Mapbox · FRED
           </p>
         </div>
       </footer>
