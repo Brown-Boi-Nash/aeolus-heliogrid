@@ -191,6 +191,48 @@ export function calcLCOE(inputs) {
 }
 
 /**
+ * Build a year-by-year debt amortization schedule.
+ * Returns an empty array when debtFraction is 0.
+ *
+ * Each row: { year, beginBalance, interest, principal, payment, endBalance, macrsShield }
+ */
+export function buildDebtSchedule(inputs) {
+  const {
+    systemSizeKW,
+    installCostPerW,
+    debtFraction,
+    interestRate,
+    loanTermYears,
+    itcPercent   = 0,
+    useMacrs     = false,
+    corporateTaxRate = 0.21,
+  } = inputs
+
+  if (!debtFraction || debtFraction <= 0) return []
+
+  const capex            = systemSizeKW * 1000 * installCostPerW
+  const loanAmount       = capex * debtFraction
+  const payment          = pmt(interestRate, loanTermYears, loanAmount)
+  const depreciableBasis = useMacrs ? capex * (1 - 0.5 * itcPercent) : 0
+
+  const schedule = []
+  let balance = loanAmount
+
+  for (let n = 1; n <= loanTermYears; n++) {
+    const interest    = balance * interestRate
+    const principal   = payment - interest
+    const endBalance  = Math.max(0, balance - principal)
+    const macrsRate   = useMacrs && n <= MACRS_5YR.length ? MACRS_5YR[n - 1] : 0
+    const macrsShield = depreciableBasis * macrsRate * corporateTaxRate
+
+    schedule.push({ year: n, beginBalance: balance, interest, principal, payment, endBalance, macrsShield })
+    balance = endBalance
+  }
+
+  return schedule
+}
+
+/**
  * Apply scenario multipliers to inputs before calculation.
  */
 export function applyScenario(inputs, multipliers) {

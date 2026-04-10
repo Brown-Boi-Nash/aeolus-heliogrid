@@ -5,9 +5,12 @@ import InputPanel from './InputPanel'
 import OutputPanel from './OutputPanel'
 import CashFlowSection from './CashFlowSection'
 import SensitivityHeatmap from './SensitivityHeatmap'
+import DebtSchedule from './DebtSchedule'
+import ScenarioComparison from './ScenarioComparison'
 import MemoModal from './MemoModal'
 import { generateInvestmentMemo } from '../../lib/geminiClient'
 import { computeEsg } from '../../lib/esgCalc'
+import { useSavedScenarios } from '../../hooks/useSavedScenarios'
 
 export default function Calculator({ onNavigate }) {
   const { inputs, results } = useCalculator()
@@ -26,6 +29,7 @@ export default function Calculator({ onNavigate }) {
     [inputs, selectedState?.abbr],
   )
 
+  // ── Memo ──────────────────────────────────────────────────────────────────
   const [showMemo, setShowMemo]         = useState(false)
   const [memo, setMemo]                 = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -57,11 +61,11 @@ export default function Calculator({ onNavigate }) {
         fedFunds,
         breakEvenInflation,
         esg,
-        useMacrs:          inputs.useMacrs,
-        corporateTaxRate:  inputs.corporateTaxRate,
+        useMacrs:         inputs.useMacrs,
+        corporateTaxRate: inputs.corporateTaxRate,
       })
       setMemo(text)
-    } catch (err) {
+    } catch {
       setMemo('Failed to generate memo. Please check your Gemini API key and try again.')
     } finally {
       setIsGenerating(false)
@@ -71,6 +75,47 @@ export default function Calculator({ onNavigate }) {
   const handleCopy = useCallback(() => {
     if (memo) navigator.clipboard.writeText(memo)
   }, [memo])
+
+  // ── Saved scenarios ───────────────────────────────────────────────────────
+  const { scenarios, saveScenario, deleteScenario, clearAll } = useSavedScenarios()
+  const [savedFlash, setSavedFlash] = useState(false)
+
+  const handleSaveScenario = useCallback(() => {
+    const statePart = selectedState?.name ?? 'U.S.'
+    const techPart  = energyType === 'wind' ? 'Wind' : 'Solar'
+    const sizePart  = `${inputs.systemSizeKW.toLocaleString()} kW`
+
+    saveScenario({
+      id:             Date.now().toString(),
+      name:           `${techPart} · ${statePart} · ${sizePart}`,
+      timestamp:      new Date().toISOString(),
+      // Config
+      energyType,
+      stateName:      selectedState?.name ?? null,
+      stateAbbr:      selectedState?.abbr ?? null,
+      scenario:       inputs.scenario,
+      // Key inputs
+      systemSizeKW:   inputs.systemSizeKW,
+      capacityFactor: inputs.capacityFactor,
+      installCostPerW: inputs.installCostPerW,
+      itcPercent:     inputs.itcPercent,
+      debtFraction:   inputs.debtFraction,
+      useMacrs:       inputs.useMacrs,
+      corporateTaxRate: inputs.corporateTaxRate,
+      // Results
+      irr:     results.irr,
+      npv:     results.npv,
+      lcoe:    results.lcoe,
+      payback: results.payback,
+      // ESG
+      co2Tonnes: esg.co2Tonnes,
+      esgGrade:  esg.grade,
+    })
+
+    // Brief confirmation flash
+    setSavedFlash(true)
+    setTimeout(() => setSavedFlash(false), 1800)
+  }, [energyType, selectedState, inputs, results, esg, saveScenario])
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -93,6 +138,26 @@ export default function Calculator({ onNavigate }) {
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Save Scenario */}
+          <button
+            onClick={handleSaveScenario}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-extrabold uppercase tracking-widest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+              savedFlash
+                ? 'border-primary bg-primary text-on-primary'
+                : 'border-primary text-primary hover:bg-primary hover:text-on-primary'
+            }`}
+            aria-label="Save current scenario snapshot"
+          >
+            <span
+              className="material-symbols-outlined text-sm"
+              style={{ fontVariationSettings: `'FILL' ${savedFlash ? 1 : 0}` }}
+            >
+              {savedFlash ? 'check_circle' : 'bookmark_add'}
+            </span>
+            {savedFlash ? 'Saved!' : 'Save Scenario'}
+          </button>
+
+          {/* Generate Memo */}
           <button
             onClick={handleGenerateMemo}
             disabled={isGenerating}
@@ -104,29 +169,29 @@ export default function Calculator({ onNavigate }) {
             {isGenerating ? 'Generating…' : 'Generate Memo'}
           </button>
 
-        {selectedStateAbbr && (
-          <div
-            className="flex items-center gap-2 bg-tertiary-fixed text-on-tertiary-fixed-variant px-4 py-2 rounded-xl text-xs font-bold"
-            role="status"
-            aria-live="polite"
-          >
-            <span
-              className="material-symbols-outlined text-sm"
-              aria-hidden="true"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+          {selectedStateAbbr && (
+            <div
+              className="flex items-center gap-2 bg-tertiary-fixed text-on-tertiary-fixed-variant px-4 py-2 rounded-xl text-xs font-bold"
+              role="status"
+              aria-live="polite"
             >
-              location_on
-            </span>
-            {selectedStateAbbr} data applied from Map
-            <button
-              onClick={() => onNavigate?.(3)}
-              className="underline underline-offset-2 hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current rounded"
-              aria-label="Go to Geographic Map tab"
-            >
-              Change →
-            </button>
-          </div>
-        )}
+              <span
+                className="material-symbols-outlined text-sm"
+                aria-hidden="true"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                location_on
+              </span>
+              {selectedStateAbbr} data applied from Map
+              <button
+                onClick={() => onNavigate?.(3)}
+                className="underline underline-offset-2 hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current rounded"
+                aria-label="Go to Geographic Map tab"
+              >
+                Change →
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -144,10 +209,10 @@ export default function Calculator({ onNavigate }) {
         />
       )}
 
-      {/* ── Inputs (full width, horizontal) ──────────────────────── */}
+      {/* ── Inputs ───────────────────────────────────────────────── */}
       <InputPanel selectedStateAbbr={selectedStateAbbr} energyType={energyType} />
 
-      {/* ── Outputs + Cash Flow side by side ──────────────────────── */}
+      {/* ── Outputs + Cash Flow ──────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-4">
           <OutputPanel results={results} inputs={inputs} />
@@ -162,7 +227,17 @@ export default function Calculator({ onNavigate }) {
 
       <SensitivityHeatmap inputs={inputs} />
 
-      {/* ── Methodology Note ──────────────────────────────────────── */}
+      {/* ── Debt Schedule ────────────────────────────────────────── */}
+      <DebtSchedule inputs={inputs} />
+
+      {/* ── Scenario Comparison ──────────────────────────────────── */}
+      <ScenarioComparison
+        scenarios={scenarios}
+        onDelete={deleteScenario}
+        onClearAll={clearAll}
+      />
+
+      {/* ── Methodology Note ─────────────────────────────────────── */}
       <section
         className="bg-surface-container-highest rounded-xl p-5 border-l-4 border-primary"
         aria-label="Calculation methodology"
