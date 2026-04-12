@@ -81,11 +81,10 @@ export default function ResearchAssistant() {
       const responseText = await sendGeminiMessage(trimmed, buildContext())
       const citations    = extractCitations(responseText)
       addMessage({ role: 'assistant', text: responseText, citations, timestamp: Date.now() })
-    } catch (err) {
-      console.error('Gemini error:', err)
+    } catch {
       addMessage({
         role: 'assistant',
-        text: `Unable to reach Gemini AI. Error: ${err?.message ?? 'Unknown error'}. Check your API key in \`.env.local\`.`,
+        text: 'The AI assistant is temporarily unavailable. Please try again in a moment.',
         citations: [],
         timestamp: Date.now(),
       })
@@ -193,8 +192,9 @@ export default function ResearchAssistant() {
                 <textarea
                   ref={textareaRef}
                   value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
+                  onChange={(e) => setInputText(e.target.value.slice(0, 500))}
                   onKeyDown={handleKeyDown}
+                  maxLength={500}
                   placeholder={energyType === 'wind'
                     ? 'Ask about wind LCOE, IRR, ITC vs PTC, state wind resources…'
                     : 'Ask about solar LCOE, IRR, ITC policy, state solar resources…'}
