@@ -12,7 +12,7 @@ function round(val, dp = 4) {
 function InputField({ label, info, id, value, onChange, min, max, step = 'any', unit, hint }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="label-caps flex items-center gap-1.5">
+      <label htmlFor={id} className="label-caps flex items-start gap-1.5 min-h-[2rem]">
         {label}
         <InfoHint text={info} label={`${label} info`} />
         {unit && (
@@ -45,7 +45,7 @@ function InputField({ label, info, id, value, onChange, min, max, step = 'any', 
 function MacrsToggle({ checked, onChange, info }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="label-caps flex items-center gap-1.5">
+      <span className="label-caps flex items-start gap-1.5 min-h-[2rem]">
         MACRS Depreciation
         <InfoHint text={info} label="MACRS info" />
       </span>
@@ -61,7 +61,7 @@ function MacrsToggle({ checked, onChange, info }) {
           }`}
         >
           <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+            className={`inline-block h-5 w-5 transform rounded-full bg-surface-container-lowest shadow transition-transform ${
               checked ? 'translate-x-8' : 'translate-x-1'
             }`}
           />
@@ -125,7 +125,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
         <legend className="label-caps text-primary border-b border-on-surface/5 pb-1 w-full block mb-4">
           Project Parameters
         </legend>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2 items-end">
           <InputField
             id="systemSizeKW" label="System Size"
             info="Nameplate project capacity used for production and capex sizing."
@@ -157,13 +157,44 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
             value={round(inputs.omCostPerKWPerYear, 2)} onChange={set('omCostPerKWPerYear')}
             min={0} unit="$/kW/yr"
           />
-          <InputField
-            id="electricityRate" label="Electricity Rate"
-            info="Revenue rate per kWh. Auto-seeded from EIA and updated by selected map state."
-            value={round(inputs.electricityRate, 4)} onChange={set('electricityRate')}
-            min={0.01} step={0.001} unit="$/kWh"
-            hint="Auto-filled from EIA"
-          />
+          {/* Electricity Rate + PPA toggle */}
+          <div className="flex flex-col gap-1.5">
+            <div className="label-caps flex items-start gap-1.5 min-h-[2rem]">
+              Electricity Rate
+              <InfoHint text="Revenue rate per kWh. Auto-seeded from EIA. Use PPA mode for utility-scale projects that sell via long-term Power Purchase Agreements (~75% of retail rate)." label="Electricity rate info" />
+              <span className="ml-1 opacity-50 normal-case font-medium tracking-normal text-[9px]">($/kWh)</span>
+              {/* Retail / PPA mode toggle */}
+              <button
+                type="button"
+                onClick={() => setInput('ppaMode', !inputs.ppaMode)}
+                className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border transition-colors ${
+                  inputs.ppaMode
+                    ? 'bg-secondary text-on-secondary border-secondary'
+                    : 'bg-transparent text-on-surface/40 border-on-surface/20 hover:border-primary hover:text-primary'
+                }`}
+                title={inputs.ppaMode ? 'PPA mode — revenue at 75% of retail. Click to switch to retail.' : 'Retail mode — full retail rate as revenue. Click to switch to PPA.'}
+              >
+                {inputs.ppaMode ? 'PPA' : 'Retail'}
+              </button>
+            </div>
+            <div className="relative flex-1">
+              <input
+                id="electricityRate"
+                type="number"
+                value={round(inputs.electricityRate, 4)}
+                min={0.01}
+                step={0.001}
+                onChange={(e) => setInput('electricityRate', parseFloat(e.target.value) || 0)}
+                className="input-botanical w-full"
+              />
+              <div className="absolute bottom-0 left-0 w-full h-px bg-outline-variant opacity-20 pointer-events-none" aria-hidden="true" />
+            </div>
+            <p className="text-[10px] text-on-surface/40 font-medium min-h-[14px]">
+              {inputs.ppaMode
+                ? `PPA effective: $${(inputs.electricityRate * 0.75).toFixed(4)}/kWh (~75% of retail)`
+                : 'Auto-filled from EIA'}
+            </p>
+          </div>
           <InputField
             id="escalationRate" label="Price Escalation"
             info="Expected annual increase in electricity price and O&M costs."
@@ -182,7 +213,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
           <legend className="label-caps text-primary border-b border-on-surface/5 pb-1 w-full block mb-4">
             Financing
           </legend>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 items-end">
             <InputField
               id="debtFraction" label="Debt Fraction"
               info="Share of capex financed by debt; remainder is equity."
@@ -216,7 +247,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
           <legend className="label-caps text-primary border-b border-on-surface/5 pb-1 w-full block mb-4">
             Policy &amp; Tax
           </legend>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 items-end">
             <InputField
               id="itcPercent" label="ITC / Credit"
               info="Investment Tax Credit percentage reducing year-0 equity outflow. IRA 2022 base rate is 30%."

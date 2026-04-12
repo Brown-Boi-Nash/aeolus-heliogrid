@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react'
 import clsx from 'clsx'
 
 // ── Formatting helpers ────────────────────────────────────────────────────────
@@ -70,9 +71,70 @@ const ROWS = [
   { label: 'ESG Grade',       key: 'esgGrade',      fmt: (s) => s.esgGrade ?? '—', metric: false },
 ]
 
+// ── Inline name editor ────────────────────────────────────────────────────────
+
+function ScenarioName({ id, name, onRename }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft]     = useState(name)
+  const inputRef              = useRef(null)
+
+  function startEdit() {
+    setDraft(name)
+    setEditing(true)
+    // Focus after render
+    setTimeout(() => inputRef.current?.select(), 0)
+  }
+
+  function commit() {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== name) onRename(id, trimmed)
+    setEditing(false)
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter')  commit()
+    if (e.key === 'Escape') setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={handleKey}
+        className="w-full text-center text-[10px] font-extrabold bg-surface-container border border-primary rounded px-1.5 py-0.5 text-on-surface outline-none focus:ring-1 focus:ring-primary"
+        aria-label="Rename scenario"
+        maxLength={60}
+      />
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={startEdit}
+      title="Click to rename"
+      className="group/name flex items-center justify-center gap-1 w-full hover:text-primary transition-colors"
+    >
+      <span className="text-[10px] font-extrabold text-on-surface text-center leading-tight group-hover/name:text-primary transition-colors">
+        {name}
+      </span>
+      <span
+        className="material-symbols-outlined text-[10px] opacity-0 group-hover/name:opacity-40 transition-opacity flex-shrink-0"
+        aria-hidden="true"
+        style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+      >
+        edit
+      </span>
+    </button>
+  )
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function ScenarioComparison({ scenarios, onDelete, onClearAll }) {
+export default function ScenarioComparison({ scenarios, onDelete, onRename, onClearAll }) {
   if (!scenarios.length) return null
 
   // Pre-compute best indices for metric rows
@@ -138,10 +200,8 @@ export default function ScenarioComparison({ scenarios, onDelete, onClearAll }) 
                     >
                       <span className="material-symbols-outlined text-sm">close</span>
                     </button>
-                    {/* Scenario name */}
-                    <span className="text-[10px] font-extrabold text-on-surface text-center leading-tight">
-                      {s.name}
-                    </span>
+                    {/* Scenario name — click to rename */}
+                    <ScenarioName id={s.id} name={s.name} onRename={onRename} />
                     {/* Timestamp */}
                     <span className="text-[9px] text-on-surface/35 font-medium">
                       {new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}

@@ -50,8 +50,11 @@ export function buildCashFlows(inputs) {
     itcPercent,
     useMacrs = false,
     corporateTaxRate = 0.21,
+    ppaMode = false,
   } = inputs
 
+  // PPA mode: utility-scale projects sell at ~75% of retail rate via long-term PPA contract
+  const effectiveRate    = ppaMode ? electricityRate * 0.75 : electricityRate
   const capex            = systemSizeKW * 1000 * installCostPerW
   const itcBenefit       = capex * itcPercent
   const loanAmount       = capex * debtFraction
@@ -68,7 +71,7 @@ export function buildCashFlows(inputs) {
     const escalationFactor  = Math.pow(1 + escalationRate, n - 1)
 
     const energyKWh  = systemSizeKW * 8760 * capacityFactor * degradationFactor
-    const revenue    = energyKWh * electricityRate * escalationFactor
+    const revenue    = energyKWh * effectiveRate * escalationFactor
     const omCost     = systemSizeKW * omCostPerKWPerYear * escalationFactor
     const debtService = n <= loanTermYears ? annualDebtService : 0
 
@@ -165,6 +168,7 @@ export function calcLCOE(inputs) {
     useMacrs = false,
     corporateTaxRate = 0.21,
     itcPercent = 0,
+    // ppaMode does not affect LCOE (cost-side metric, not revenue-side)
   } = inputs
 
   const capex            = systemSizeKW * 1000 * installCostPerW

@@ -4,6 +4,8 @@ import { useFredData } from '../../hooks/useFredData'
 import useDashboardStore from '../../store/dashboardStore'
 import MetricCard from '../../components/ui/MetricCard'
 import CapacityTrendChart from './CapacityTrendChart'
+import GridParityStatus from './GridParityStatus'
+import TopStatesLeaderboard from './TopStatesLeaderboard'
 import { STATE_METADATA } from '../../constants/stateMetadata'
 
 // Region definitions — state abbreviations grouped geographically
@@ -47,7 +49,7 @@ function windOutlookLabel(avgPrice, avgWindSpeed) {
   return 'Developing'
 }
 
-export default function MarketOverview() {
+export default function MarketOverview({ onNavigate, theme = 'light' }) {
   const { data, error, isLoading } = useEiaData()
   useFredData()
   const energyType         = useDashboardStore((s) => s.energyType)
@@ -239,11 +241,19 @@ export default function MarketOverview() {
         </section>
       )}
 
+      {/* ── Top States Leaderboard ────────────────────────────────── */}
+      <TopStatesLeaderboard
+        statePrices={statePrices}
+        nationalPrice={nationalElectricityPrice}
+        onNavigate={onNavigate}
+      />
+
       {/* ── Charts ────────────────────────────────────────────────── */}
       <CapacityTrendChart
         priceData={isLoading ? [] : priceTimeSeries}
         capacityData={isLoading ? [] : selectedCapacitySeries}
         energyType={energyType}
+        theme={theme}
       />
 
       {/* ── Regional Table ────────────────────────────────────────── */}
@@ -313,25 +323,12 @@ export default function MarketOverview() {
         </div>
       </section>
 
-      {/* ── Strategic Insight ─────────────────────────────────────── */}
-      <section
-        className="bg-surface-container-highest rounded-xl p-6 border-l-4 border-primary"
-        aria-labelledby="insight-heading"
-      >
-        <span className="label-caps text-primary block mb-1">Strategic Insight</span>
-        <h2 id="insight-heading" className="text-xl font-extrabold text-on-surface mb-3">
-          The Rise of Battery Storage Co-location
-        </h2>
-        <p className="text-sm leading-relaxed text-on-surface-variant max-w-3xl">
-          2024 marks a record year for utility-scale battery storage integration, growing by 45%. This shift
-          is stabilizing peak-hour pricing in historically volatile regions like Texas and California, creating
-          new arbitrage opportunities for renewable asset owners. Projects co-locating solar + storage now
-          command a 15–20% premium in PPA negotiations.
-        </p>
-        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-primary/50">
-          Sources: BloombergNEF H2 2024 · Wood Mackenzie Solar Market Insight
-        </p>
-      </section>
+      {/* ── Grid Parity Status ────────────────────────────────────── */}
+      <GridParityStatus
+        energyType={energyType}
+        nationalPrice={nationalElectricityPrice}
+        regionalRows={regionalRows}
+      />
 
     </div>
   )

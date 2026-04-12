@@ -16,5 +16,7 @@ export const WIND_FINANCIAL_DEFAULTS = {
   // Tax
   useMacrs: true,
   corporateTaxRate: 0.21,
+  // Revenue mode
+  ppaMode: false,
 }
 

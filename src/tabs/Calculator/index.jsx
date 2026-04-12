@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import useDashboardStore from '../../store/dashboardStore'
 import { useCalculator } from '../../hooks/useCalculator'
 import InputPanel from './InputPanel'
@@ -13,7 +13,7 @@ import { computeEsg } from '../../lib/esgCalc'
 import { useSavedScenarios } from '../../hooks/useSavedScenarios'
 
 export default function Calculator({ onNavigate }) {
-  const { inputs, results } = useCalculator()
+  const { inputs, results, p90Results } = useCalculator()
   const selectedStateAbbr = useDashboardStore((s) => s.selectedStateAbbr)
   const energyType        = useDashboardStore((s) => s.energyType)
   const selectedState     = useDashboardStore((s) => s.selectedState)
@@ -33,11 +33,33 @@ export default function Calculator({ onNavigate }) {
   const [showMemo, setShowMemo]         = useState(false)
   const [memo, setMemo]                 = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [memoStale, setMemoStale]       = useState(false)
+  const memoInputsRef                   = useRef(null)  // snapshot of inputs+results at last generation
+
+  // Mark memo stale whenever inputs or results change after a memo was generated
+  useEffect(() => {
+    if (!memo || isGenerating) return
+    const prev = memoInputsRef.current
+    if (!prev) return
+    const changed =
+      prev.systemSizeKW    !== inputs.systemSizeKW    ||
+      prev.installCostPerW !== inputs.installCostPerW ||
+      prev.capacityFactor  !== inputs.capacityFactor  ||
+      prev.electricityRate !== inputs.electricityRate ||
+      prev.itcPercent      !== inputs.itcPercent      ||
+      prev.debtFraction    !== inputs.debtFraction    ||
+      prev.useMacrs        !== inputs.useMacrs        ||
+      prev.scenario        !== inputs.scenario        ||
+      prev.ppaMode         !== inputs.ppaMode
+    if (changed) setMemoStale(true)
+  }, [inputs, memo, isGenerating])
 
   const handleGenerateMemo = useCallback(async () => {
     setMemo(null)
+    setMemoStale(false)
     setShowMemo(true)
     setIsGenerating(true)
+    memoInputsRef.current = { ...inputs }
     try {
       const text = await generateInvestmentMemo({
         energyType,
@@ -77,7 +99,7 @@ export default function Calculator({ onNavigate }) {
   }, [memo])
 
   // ── Saved scenarios ───────────────────────────────────────────────────────
-  const { scenarios, saveScenario, deleteScenario, clearAll } = useSavedScenarios()
+  const { scenarios, saveScenario, deleteScenario, renameScenario, clearAll } = useSavedScenarios()
   const [savedFlash, setSavedFlash] = useState(false)
 
   const handleSaveScenario = useCallback(() => {
@@ -157,17 +179,30 @@ export default function Calculator({ onNavigate }) {
             {savedFlash ? 'Saved!' : 'Save Scenario'}
           </button>
 
-          {/* Generate Memo */}
-          <button
-            onClick={handleGenerateMemo}
-            disabled={isGenerating}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-extrabold uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-botanical disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            aria-label="Generate AI investment memo"
-          >
-            <span className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}>description</span>
-            {isGenerating ? 'Generating…' : 'Generate Memo'}
-          </button>
+          {/* Generate Memo — with stale indicator */}
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={handleGenerateMemo}
+              disabled={isGenerating}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-colors shadow-botanical disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                memoStale
+                  ? 'bg-secondary text-on-secondary hover:bg-secondary/90'
+                  : 'bg-primary text-on-primary hover:bg-primary/90'
+              }`}
+              aria-label="Generate AI investment memo"
+            >
+              <span className="material-symbols-outlined text-sm"
+                style={{ fontVariationSettings: "'FILL' 1" }}>
+                {memoStale ? 'refresh' : 'description'}
+              </span>
+              {isGenerating ? 'Generating…' : memoStale ? 'Regenerate Memo' : 'Generate Memo'}
+            </button>
+            {memoStale && !isGenerating && (
+              <p className="text-[9px] font-bold text-secondary/80 uppercase tracking-wider">
+                Inputs changed · memo is stale
+              </p>
+            )}
+          </div>
 
           {selectedStateAbbr && (
             <div
@@ -215,7 +250,7 @@ export default function Calculator({ onNavigate }) {
       {/* ── Outputs + Cash Flow ──────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-4">
-          <OutputPanel results={results} inputs={inputs} />
+          <OutputPanel results={results} inputs={inputs} p90Results={p90Results} />
         </div>
         <div className="lg:col-span-8 min-h-[520px]">
           <CashFlowSection
@@ -234,6 +269,7 @@ export default function Calculator({ onNavigate }) {
       <ScenarioComparison
         scenarios={scenarios}
         onDelete={deleteScenario}
+        onRename={renameScenario}
         onClearAll={clearAll}
       />
 

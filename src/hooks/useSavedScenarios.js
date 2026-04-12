@@ -34,10 +34,18 @@ export function useSavedScenarios() {
     })
   }, [])
 
+  const renameScenario = useCallback((id, newName) => {
+    setScenarios((prev) => {
+      const next = prev.map((s) => s.id === id ? { ...s, name: newName } : s)
+      persist(next)
+      return next
+    })
+  }, [])
+
   const clearAll = useCallback(() => {
     setScenarios([])
     persist([])
   }, [])
 
-  return { scenarios, saveScenario, deleteScenario, clearAll }
+  return { scenarios, saveScenario, deleteScenario, renameScenario, clearAll }
 }

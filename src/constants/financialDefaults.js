@@ -16,6 +16,8 @@ export const FINANCIAL_DEFAULTS = {
   // Tax
   useMacrs: true,
   corporateTaxRate: 0.21,
+  // Revenue mode
+  ppaMode: false,
 }
 
 export const SCENARIO_MULTIPLIERS = {

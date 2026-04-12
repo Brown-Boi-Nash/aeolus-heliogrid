@@ -12,5 +12,13 @@ export function useCalculator() {
     return runCalculations(adjustedInputs)
   }, [inputs])
 
-  return { inputs, results }
+  // P90: 10th-percentile production year — exceeded 90% of the time.
+  // Lenders underwrite to P90; modeled as CF × 0.90 per NREL convention.
+  const p90Results = useMemo(() => {
+    const multipliers = SCENARIO_MULTIPLIERS[inputs.scenario] ?? SCENARIO_MULTIPLIERS.base
+    const adjustedInputs = applyScenario(inputs, multipliers)
+    return runCalculations({ ...adjustedInputs, capacityFactor: adjustedInputs.capacityFactor * 0.90 })
+  }, [inputs])
+
+  return { inputs, results, p90Results }
 }

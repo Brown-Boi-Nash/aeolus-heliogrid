@@ -4,7 +4,7 @@ import InfoHint from '../../components/ui/InfoHint'
 import useDashboardStore from '../../store/dashboardStore'
 import { computeEsg, EMISSION_FACTORS, US_AVG_EMISSION } from '../../lib/esgCalc'
 
-function KpiCard({ label, info, value, unit, sub, icon, status }) {
+function KpiCard({ label, info, value, unit, sub, sub2, icon, status }) {
   // status: 'good' | 'warn' | 'bad' | 'neutral'
   const statusColor = {
     good:    'text-primary',
@@ -46,15 +46,20 @@ function KpiCard({ label, info, value, unit, sub, icon, status }) {
       {sub && (
         <p className="text-xs text-on-surface-variant mt-2 font-medium">{sub}</p>
       )}
+      {sub2 && (
+        <p className="text-[10px] text-on-surface/40 font-semibold mt-1 tabular-nums">{sub2}</p>
+      )}
     </div>
   )
 }
 
-export default function OutputPanel({ results, inputs }) {
+export default function OutputPanel({ results, inputs, p90Results }) {
   const selectedState = useDashboardStore((s) => s.selectedState)
   const { irr, npv, payback, lcoe } = results
 
+  const p90Irr    = p90Results?.irr
   const irrPct   = irr   != null ? (irr * 100).toFixed(1)    : null
+  const p90IrrPct = p90Irr != null ? (p90Irr * 100).toFixed(1) : null
   const npvM     = npv   != null ? (npv / 1_000_000).toFixed(2) : null
   const lcoeVal  = lcoe  != null ? lcoe.toFixed(4)            : null
   const payYears = payback != null ? payback.toFixed(1)       : null
@@ -94,6 +99,7 @@ export default function OutputPanel({ results, inputs }) {
         sub={irr != null
           ? `${irr >= 0.10 ? 'Exceeds' : 'Below'} typical 10% hurdle rate`
           : 'No sign change in cash flows'}
+        sub2={p90IrrPct != null ? `P90 downside: ${p90IrrPct}%` : undefined}
         icon="trending_up"
         status={irrStatus}
       />
