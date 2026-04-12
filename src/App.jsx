@@ -321,7 +321,7 @@ export default function App() {
               key={tab.id}
               className={({ selected }) =>
                 clsx(
-                  'flex-1 flex flex-col items-center gap-0.5 py-2.5 px-2 text-[9px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors',
+                  'flex-1 flex flex-col items-center gap-0.5 py-2.5 px-2 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
                   selected
                     ? 'text-primary border-b-2 border-primary'

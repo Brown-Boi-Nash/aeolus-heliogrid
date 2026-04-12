@@ -80,7 +80,7 @@ function RegionRow({ name, price, lo, hi, isLast }) {
       </div>
 
       {/* Spread vs lo label */}
-      <span className={`text-xs font-extrabold tabular-nums w-20 text-right flex-shrink-0 ${meta?.text ?? 'text-on-surface/30'}`}>
+      <span className={`text-xs font-extrabold tabular-nums w-20 text-right flex-shrink-0 ${meta?.text ?? 'text-on-surface/40'}`}>
         {spreadVsLo != null
           ? `${spreadVsLo >= 0 ? '+' : ''}$${spreadVsLo.toFixed(3)}`
           : '—'}
@@ -88,7 +88,7 @@ function RegionRow({ name, price, lo, hi, isLast }) {
 
       {/* Status pill */}
       {meta && (
-        <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${meta.pill}`}>
+        <span className={`text-[11px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${meta.pill}`}>
           {meta.label}
         </span>
       )}
@@ -138,7 +138,7 @@ export default function GridParityStatus({ energyType, nationalPrice, regionalRo
           <div className="w-px h-10 bg-on-surface/10" aria-hidden="true" />
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Spread vs LCOE lo</p>
-            <p className={`text-2xl font-black tabular-nums mt-0.5 ${natMeta?.text ?? 'text-on-surface/30'}`}>
+            <p className={`text-2xl font-black tabular-nums mt-0.5 ${natMeta?.text ?? 'text-on-surface/40'}`}>
               {natSpread != null ? `${natSpread >= 0 ? '+' : ''}$${natSpread.toFixed(3)}` : '—'}
             </p>
           </div>
@@ -164,7 +164,7 @@ export default function GridParityStatus({ energyType, nationalPrice, regionalRo
             <span className="text-on-surface font-extrabold ml-1">${atb.lo.toFixed(3)}–${atb.hi.toFixed(3)}/kWh</span>
           </span>
         </div>
-        <span className="text-[9px] text-on-surface/30">Low-end = best resource site · High-end = marginal site</span>
+        <span className="text-[11px] text-on-surface/40">Low-end = best resource site · High-end = marginal site</span>
       </div>
 
       {/* ── Column headers ── */}
@@ -193,7 +193,7 @@ export default function GridParityStatus({ energyType, nationalPrice, regionalRo
         </div>
       )}
 
-      <p className="px-6 py-3 text-[9px] text-on-surface/25 border-t border-on-surface/6 mt-1">
+      <p className="px-6 py-3 text-[11px] text-on-surface/40 border-t border-on-surface/6 mt-1">
         NREL ATB 2024 · EIA retail electricity prices (latest month) · Spread = retail − LCOE low-end ·
         Parity does not account for transmission, curtailment, or interconnection costs
       </p>

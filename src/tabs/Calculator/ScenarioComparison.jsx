@@ -203,12 +203,12 @@ export default function ScenarioComparison({ scenarios, onDelete, onRename, onCl
                     {/* Scenario name — click to rename */}
                     <ScenarioName id={s.id} name={s.name} onRename={onRename} />
                     {/* Timestamp */}
-                    <span className="text-[9px] text-on-surface/35 font-medium">
+                    <span className="text-[11px] text-on-surface/35 font-medium">
                       {new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
                     {/* Scenario badge */}
                     {s.scenario && s.scenario !== 'base' && (
-                      <span className="px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary text-[8px] font-bold uppercase tracking-wider">
+                      <span className="px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-bold uppercase tracking-wider">
                         {s.scenario}
                       </span>
                     )}
@@ -263,7 +263,7 @@ export default function ScenarioComparison({ scenarios, onDelete, onRename, onCl
                           {row.fmt(s)}
                           {isBest && (
                             <span
-                              className="ml-1 text-primary text-[9px] font-extrabold"
+                              className="ml-1 text-primary text-[11px] font-extrabold"
                               title="Best value in this metric"
                               aria-label="Best"
                             >
@@ -281,7 +281,7 @@ export default function ScenarioComparison({ scenarios, onDelete, onRename, onCl
         </table>
       </div>
 
-      <p className="px-6 pb-4 text-[9px] text-on-surface/30">
+      <p className="px-6 pb-4 text-[11px] text-on-surface/40">
         ★ indicates best value in each metric row. Scenarios saved locally in your browser. Max 8 snapshots.
       </p>
     </section>

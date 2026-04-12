@@ -90,7 +90,7 @@ export default function SensitivityHeatmap({ inputs }) {
             gpp_good
           </span>
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-widest text-on-surface/40">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-on-surface/40">
               10% Hurdle Breakeven
             </p>
             {breakeven != null ? (

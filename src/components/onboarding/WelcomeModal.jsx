@@ -80,7 +80,7 @@ export default function WelcomeModal({ onStartTour, onSkip }) {
           </button>
         </div>
 
-        <p className="text-[10px] text-on-surface/30 text-center">
+        <p className="text-[10px] text-on-surface/40 text-center">
           You can revisit this tour any time from the menu.
         </p>
       </div>

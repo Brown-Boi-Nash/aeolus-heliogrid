@@ -95,7 +95,7 @@ export default function CapacityTrendChart({
             </LineChart>
           </ResponsiveContainer>
         )}
-        <p className="text-[10px] font-bold text-on-surface/30 uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-on-surface/40 uppercase tracking-widest">
           Source: EIA Electric Power Monthly
         </p>
       </div>
@@ -145,7 +145,7 @@ export default function CapacityTrendChart({
             </BarChart>
           </ResponsiveContainer>
         )}
-        <p className="text-[10px] font-bold text-on-surface/30 uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-on-surface/40 uppercase tracking-widest">
           Source: EIA State Electricity Profiles (Table 4)
         </p>
       </div>

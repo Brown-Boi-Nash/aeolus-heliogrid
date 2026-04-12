@@ -199,7 +199,7 @@ export default function ResearchAssistant() {
                     ? 'Ask about wind LCOE, IRR, ITC vs PTC, state wind resources…'
                     : 'Ask about solar LCOE, IRR, ITC policy, state solar resources…'}
                   rows={1}
-                  className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none scrollbar-botanical max-h-32 min-h-[44px] text-on-surface placeholder:text-on-surface/30"
+                  className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none scrollbar-botanical max-h-32 min-h-[44px] text-on-surface placeholder:text-on-surface/40"
                   aria-label="Chat message input. Press Enter to send, Shift+Enter for new line."
                   aria-multiline="true"
                   disabled={isChatLoading}
@@ -218,7 +218,7 @@ export default function ResearchAssistant() {
                 <span className="chip-positive bg-tertiary-fixed text-on-tertiary-fixed-variant">
                   Gemini 2.5 Flash Lite
                 </span>
-                <span className="text-[9px] font-bold text-on-surface/30 uppercase tracking-widest">
+                <span className="text-[11px] font-bold text-on-surface/40 uppercase tracking-widest">
                   Shift+Enter for new line
                 </span>
               </div>

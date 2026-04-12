@@ -38,7 +38,7 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
           </h2>
           <p className="label-caps opacity-60">Annual free cash flow to equity</p>
         </div>
-        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-widest">
+        <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-primary inline-block" aria-hidden="true" />
             Positive
@@ -98,7 +98,7 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
               </div>
               {isPaybackYear && (
                 <span
-                  className="text-[9px] font-extrabold uppercase tracking-widest text-primary flex-shrink-0"
+                  className="text-[11px] font-extrabold uppercase tracking-widest text-primary flex-shrink-0"
                   aria-label="Payback year"
                 >
                   Payback ✓
@@ -113,7 +113,7 @@ export default function CashFlowSection({ cashFlows, projectLifeYears }) {
       {projectLifeYears > 5 && (
         <div className="flex items-center justify-center opacity-30" aria-hidden="true">
           <div className="flex-1 border-t border-dashed border-outline-variant/20" />
-          <span className="mx-3 text-[8px] font-bold uppercase tracking-[0.3em]">Operational Phase</span>
+          <span className="mx-3 text-[10px] font-bold uppercase tracking-[0.3em]">Operational Phase</span>
           <div className="flex-1 border-t border-dashed border-outline-variant/20" />
         </div>
       )}

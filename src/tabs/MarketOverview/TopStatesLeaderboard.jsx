@@ -108,7 +108,7 @@ const RANK_STYLES = [
   { num: 'text-secondary',           bg: 'bg-secondary/6'           },  // #2 — sage
   { num: 'text-tertiary-container',  bg: 'bg-tertiary/5'            },  // #3 — emerald
   { num: 'text-on-surface/35',       bg: 'bg-transparent'           },  // #4
-  { num: 'text-on-surface/25',       bg: 'bg-transparent'           },  // #5
+  { num: 'text-on-surface/40',       bg: 'bg-transparent'           },  // #5
 ]
 
 function StateCard({ rank, state, onSelect }) {
@@ -127,7 +127,7 @@ function StateCard({ rank, state, onSelect }) {
         <span className={`text-xl font-black tabular-nums ${style.num}`}>{rank + 1}</span>
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-black tabular-nums text-on-surface">{score}</span>
-          <span className="text-[9px] font-bold text-on-surface/30 uppercase tracking-wider">/100</span>
+          <span className="text-[11px] font-bold text-on-surface/40 uppercase tracking-wider">/100</span>
         </div>
       </div>
 
@@ -158,19 +158,19 @@ function StateCard({ rank, state, onSelect }) {
       {/* Score bars */}
       <div className="space-y-1.5 pt-1 border-t border-on-surface/6">
         <div className="grid grid-cols-[auto_1fr_auto] gap-x-1.5 items-center">
-          <span className="text-[8px] font-bold uppercase tracking-wider text-on-surface/30 w-6">Res</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 w-6">Res</span>
           <MiniBar score={state.resScore}  color="bg-primary" />
-          <span className="text-[9px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.resScore * 100)}</span>
+          <span className="text-[11px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.resScore * 100)}</span>
         </div>
         <div className="grid grid-cols-[auto_1fr_auto] gap-x-1.5 items-center">
-          <span className="text-[8px] font-bold uppercase tracking-wider text-on-surface/30 w-6">Rate</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 w-6">Rate</span>
           <MiniBar score={state.rateScore} color="bg-secondary" />
-          <span className="text-[9px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.rateScore * 100)}</span>
+          <span className="text-[11px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.rateScore * 100)}</span>
         </div>
         <div className="grid grid-cols-[auto_1fr_auto] gap-x-1.5 items-center">
-          <span className="text-[8px] font-bold uppercase tracking-wider text-on-surface/30 w-6">Pol</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 w-6">Pol</span>
           <MiniBar score={state.polScore}  color="bg-tertiary" />
-          <span className="text-[9px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.polScore * 100)}</span>
+          <span className="text-[11px] tabular-nums font-bold text-on-surface/40 w-4 text-right">{Math.round(state.polScore * 100)}</span>
         </div>
       </div>
     </button>
@@ -219,7 +219,7 @@ export default function TopStatesLeaderboard({ statePrices, nationalPrice, onNav
             </p>
           </div>
         </div>
-        <p className="text-[9px] text-on-surface/25 hidden sm:block">
+        <p className="text-[11px] text-on-surface/40 hidden sm:block">
           EIA · NREL · DSIRE
         </p>
       </div>

@@ -175,7 +175,7 @@ export default function OutputPanel({ results, inputs, p90Results }) {
                 ? `${(esg.co2Tonnes / 1_000).toFixed(1)}k`
                 : Math.round(esg.co2Tonnes)}
             </p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
               tonnes CO₂/yr
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function OutputPanel({ results, inputs, p90Results }) {
                 ? `${(esg.carsEquivalent / 1_000).toFixed(1)}k`
                 : esg.carsEquivalent}
             </p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
               cars removed
             </p>
           </div>
@@ -195,14 +195,14 @@ export default function OutputPanel({ results, inputs, p90Results }) {
                 ? `${(esg.homesPowered / 1_000).toFixed(1)}k`
                 : esg.homesPowered}
             </p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mt-0.5 leading-tight">
               homes powered
             </p>
           </div>
         </div>
 
         {/* Footnote */}
-        <p className="text-[9px] text-on-surface/30 mt-2 leading-tight">
+        <p className="text-[11px] text-on-surface/40 mt-2 leading-tight">
           EPA eGRID 2022 · {selectedState?.name ?? 'US avg'}{' '}
           {(EMISSION_FACTORS[selectedState?.abbr] ?? US_AVG_EMISSION).toFixed(3)} kg CO₂e/kWh ·{' '}
           EIA: 10,500 kWh/home/yr · EPA: 4.6 t CO₂/car/yr

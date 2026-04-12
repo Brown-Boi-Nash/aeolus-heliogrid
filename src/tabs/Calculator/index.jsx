@@ -198,7 +198,7 @@ export default function Calculator({ onNavigate }) {
               {isGenerating ? 'Generating…' : memoStale ? 'Regenerate Memo' : 'Generate Memo'}
             </button>
             {memoStale && !isGenerating && (
-              <p className="text-[9px] font-bold text-secondary/80 uppercase tracking-wider">
+              <p className="text-[11px] font-bold text-secondary/80 uppercase tracking-wider">
                 Inputs changed · memo is stale
               </p>
             )}

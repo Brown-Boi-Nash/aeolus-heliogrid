@@ -64,7 +64,7 @@ export default function MessageBubble({ message }) {
               {message.citations.map((c) => (
                 <span
                   key={c}
-                  className="text-[9px] font-bold uppercase tracking-widest bg-surface-container px-2 py-0.5 rounded text-on-surface-variant"
+                  className="text-[11px] font-bold uppercase tracking-widest bg-surface-container px-2 py-0.5 rounded text-on-surface-variant"
                 >
                   {c}
                 </span>
@@ -74,7 +74,7 @@ export default function MessageBubble({ message }) {
         </div>
 
         {/* Timestamp */}
-        <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface/30">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-on-surface/40">
           {isUser ? 'You' : 'Gemini AI'} · {time}
         </span>
       </div>

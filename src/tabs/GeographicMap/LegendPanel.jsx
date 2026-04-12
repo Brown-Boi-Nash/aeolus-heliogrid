@@ -44,7 +44,7 @@ export default function LegendPanel({ energyType = 'solar' }) {
           </div>
         ))}
       </div>
-      <p className="text-[9px] font-bold text-on-surface/30 uppercase tracking-widest mt-3">
+      <p className="text-[11px] font-bold text-on-surface/40 uppercase tracking-widest mt-3">
         Source: {energyType === 'wind' ? 'Pre-bundled Wind Toolkit averages' : 'NREL NSRDB'}
       </p>
     </div>

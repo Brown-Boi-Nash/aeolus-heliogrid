@@ -193,7 +193,7 @@
 
   /* Label style from design doc */
   .label-caps {
-    @apply text-[10px] font-extrabold uppercase tracking-[0.1em] text-on-surface-variant;
+    @apply text-[11px] font-extrabold uppercase tracking-[0.1em] text-on-surface-variant;
   }
 
   /* Growth chip — positive signal */

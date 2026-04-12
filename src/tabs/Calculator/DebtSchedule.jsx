@@ -144,7 +144,7 @@ export default function DebtSchedule({ inputs }) {
               </tr>
             </tfoot>
           </table>
-          <p className="text-[9px] text-on-surface/30 mt-3">
+          <p className="text-[11px] text-on-surface/40 mt-3">
             Standard fixed-rate amortization · Interest = beginning balance × {((inputs.interestRate ?? 0) * 100).toFixed(2)}% ·
             {hasMacrs && ` MACRS shields at ${((inputs.corporateTaxRate ?? 0.21) * 100).toFixed(0)}% corp. tax rate (IRS Rev. Proc. 87-56) ·`}{' '}
             All values in nominal dollars

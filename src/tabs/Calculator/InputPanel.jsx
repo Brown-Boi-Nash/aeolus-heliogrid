@@ -16,7 +16,7 @@ function InputField({ label, info, id, value, onChange, min, max, step = 'any', 
         {label}
         <InfoHint text={info} label={`${label} info`} />
         {unit && (
-          <span className="ml-1 opacity-50 normal-case font-medium tracking-normal text-[9px]">
+          <span className="ml-1 opacity-50 normal-case font-medium tracking-normal text-[11px]">
             ({unit})
           </span>
         )}
@@ -162,12 +162,12 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
             <div className="label-caps flex items-start gap-1.5 min-h-[2rem]">
               Electricity Rate
               <InfoHint text="Revenue rate per kWh. Auto-seeded from EIA. Use PPA mode for utility-scale projects that sell via long-term Power Purchase Agreements (~75% of retail rate)." label="Electricity rate info" />
-              <span className="ml-1 opacity-50 normal-case font-medium tracking-normal text-[9px]">($/kWh)</span>
+              <span className="ml-1 opacity-50 normal-case font-medium tracking-normal text-[11px]">($/kWh)</span>
               {/* Retail / PPA mode toggle */}
               <button
                 type="button"
                 onClick={() => setInput('ppaMode', !inputs.ppaMode)}
-                className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border transition-colors ${
+                className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider border transition-colors ${
                   inputs.ppaMode
                     ? 'bg-secondary text-on-secondary border-secondary'
                     : 'bg-transparent text-on-surface/40 border-on-surface/20 hover:border-primary hover:text-primary'

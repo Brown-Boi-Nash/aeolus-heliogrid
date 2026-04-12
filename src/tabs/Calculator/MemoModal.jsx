@@ -144,7 +144,7 @@ export default function MemoModal({ memo, isGenerating, onClose, onCopy, printMe
           ) : memo ? (
             <div className="space-y-5">
               {renderMemo(memo)}
-              <p className="text-[9px] font-bold uppercase tracking-widest text-on-surface/25 pt-2 border-t border-on-surface/10">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-on-surface/40 pt-2 border-t border-on-surface/10">
                 AI-generated analysis. Verify all figures independently before investment decisions.
                 Data: EIA Open Data API · NREL Developer API · NREL ATB 2024 · IRS / IRA 2022
               </p>
