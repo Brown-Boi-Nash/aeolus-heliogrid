@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Tab } from '@headlessui/react'
 import { Joyride, STATUS } from 'react-joyride'
 import clsx from 'clsx'
@@ -7,8 +7,11 @@ import Calculator from './tabs/Calculator/index.jsx'
 import ResearchAssistant from './tabs/ResearchAssistant/index.jsx'
 import GeographicMap from './tabs/GeographicMap/index.jsx'
 import EnergyToggle from './components/ui/EnergyToggle.jsx'
+import ThemeToggle from './components/ui/ThemeToggle.jsx'
 import WelcomeModal, { STORAGE_KEY } from './components/onboarding/WelcomeModal.jsx'
 import { TOUR_STEPS } from './components/onboarding/tourSteps.js'
+
+const THEME_STORAGE_KEY = 'aeolus-theme'
 
 const TABS = [
   {
@@ -48,10 +51,10 @@ const TABS = [
 // Joyride custom styles — match the dashboard design system
 const JOYRIDE_STYLES = {
   options: {
-    primaryColor: 'var(--color-primary, #2d6a4f)',
-    backgroundColor: 'var(--color-surface-container, #f4f9f6)',
-    textColor: 'var(--color-on-surface, #1b2e25)',
-    arrowColor: 'var(--color-surface-container, #f4f9f6)',
+    primaryColor: 'rgb(var(--color-primary, 13 110 110))',
+    backgroundColor: 'rgb(var(--color-surface-container, 244 249 246))',
+    textColor: 'rgb(var(--color-on-surface, 27 46 37))',
+    arrowColor: 'rgb(var(--color-surface-container, 244 249 246))',
     zIndex: 10000,
   },
   tooltip: {
@@ -77,12 +80,12 @@ const JOYRIDE_STYLES = {
     padding: '8px 18px',
   },
   buttonBack: {
-    color: 'var(--color-on-surface, #1b2e25)',
+    color: 'rgb(var(--color-on-surface, 27 46 37))',
     fontWeight: 600,
     fontSize: '13px',
   },
   buttonSkip: {
-    color: 'var(--color-on-surface, #1b2e25)',
+    color: 'rgb(var(--color-on-surface, 27 46 37))',
     fontSize: '12px',
   },
   spotlight: {
@@ -104,12 +107,47 @@ function markTourSeen() {
   } catch {}
 }
 
+function getInitialTheme() {
+  if (typeof window === 'undefined') return 'light'
+
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
+  } catch {}
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState(0)
+  const [theme, setTheme] = useState(getInitialTheme)
 
   // Welcome modal: show if the user hasn't seen the tour yet
   const [showWelcome, setShowWelcome] = useState(() => !hasSeenTour())
   const [runTour, setRunTour] = useState(false)
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.toggle('dark', theme === 'dark')
+    root.style.colorScheme = theme
+
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {}
+  }, [theme])
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(THEME_STORAGE_KEY)) return undefined
+    } catch {}
+
+    const mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)')
+    if (!mediaQuery) return undefined
+
+    const handleChange = (event) => setTheme(event.matches ? 'dark' : 'light')
+    mediaQuery.addEventListener?.('change', handleChange)
+    return () => mediaQuery.removeEventListener?.('change', handleChange)
+  }, [])
 
   const handleStartTour = useCallback(() => {
     markTourSeen()
@@ -126,6 +164,10 @@ export default function App() {
     setRunTour(false)
     // Small delay to let Joyride reset before re-running
     setTimeout(() => setRunTour(true), 50)
+  }, [])
+
+  const handleToggleTheme = useCallback(() => {
+    setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
   }, [])
 
   const handleJoyrideCallback = useCallback(({ status }) => {
@@ -234,37 +276,33 @@ export default function App() {
             />
           </Tab.Group>
 
-          <div className="hidden lg:flex items-center gap-4">
-            <div data-tour="energy-toggle">
-              <EnergyToggle />
-            </div>
+          <div className="flex items-center gap-2 lg:gap-4">
+            <ThemeToggle theme={theme} onToggle={handleToggleTheme} />
 
-            {/* Live data badge + Tour trigger */}
-            <div className="hidden lg:flex items-center gap-3">
-              <div
-                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-on-surface/50"
-                aria-label="Live market data indicator"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" aria-hidden="true" />
-                Live Market Data
+            <div className="hidden lg:flex items-center gap-4">
+              <div data-tour="energy-toggle">
+                <EnergyToggle />
               </div>
 
-              {/* Tour restart button */}
-              <button
-                onClick={handleRestartTour}
-                title="Restart tour"
-                aria-label="Restart guided tour"
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-on-surface/40 hover:text-primary hover:bg-primary/5 transition-colors"
-              >
-                <span
-                  className="material-symbols-outlined text-sm"
-                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
-                  aria-hidden="true"
+              {/* Tour trigger */}
+              <div className="hidden lg:flex items-center gap-3">
+                {/* Tour restart button */}
+                <button
+                  onClick={handleRestartTour}
+                  title="Restart tour"
+                  aria-label="Restart guided tour"
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-on-surface/40 hover:text-primary hover:bg-primary/5 transition-colors"
                 >
-                  tour
-                </span>
-                Tour
-              </button>
+                  <span
+                    className="material-symbols-outlined text-sm"
+                    style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+                    aria-hidden="true"
+                  >
+                    tour
+                  </span>
+                  Tour
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -311,7 +349,7 @@ export default function App() {
               className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in"
               tabIndex={-1}
             >
-              <tab.component onNavigate={setActiveTab} />
+              <tab.component onNavigate={setActiveTab} theme={theme} />
             </Tab.Panel>
           ))}
         </Tab.Panels>

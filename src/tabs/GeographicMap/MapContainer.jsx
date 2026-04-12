@@ -35,7 +35,7 @@ const WIND_COLOR_EXPRESSION = [
   8.2, '#102002',
 ]
 
-export default function MapContainer({ onNavigate, energyType = 'solar' }) {
+export default function MapContainer({ onNavigate, energyType = 'solar', theme = 'light' }) {
   const statePrices            = useDashboardStore((s) => s.statePrices)
   const setSelectedState       = useDashboardStore((s) => s.setSelectedState)
   const applyStateToCalculator = useDashboardStore((s) => s.applyStateToCalculator)
@@ -60,11 +60,17 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
       try { map.setPaintProperty(layer.id, 'text-halo-width', 0) } catch {}
       try { map.setPaintProperty(layer.id, 'text-halo-color', 'rgba(0,0,0,0)') } catch {}
       if (typeof layer.id === 'string' && layer.id.includes('state-label')) {
-        try { map.setPaintProperty(layer.id, 'text-color', '#2b3430') } catch {}
+        try {
+          map.setPaintProperty(layer.id, 'text-color', theme === 'dark' ? '#e6e3b0' : '#2b3430')
+        } catch {}
       }
     }
     styleAdjustedRef.current = true
-  }, [])
+  }, [theme])
+
+  useEffect(() => {
+    styleAdjustedRef.current = false
+  }, [theme])
 
   // Fetch GeoJSON from asset URL once
   useEffect(() => {
@@ -116,6 +122,21 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
     const electricityRate = statePrices[abbr] ?? null
     const staticCapacityFactor = energyType === 'wind' ? meta.windCF : null
 
+    // Compute popup anchor direction so it always opens toward available space,
+    // preventing clipping by the map container's overflow-hidden boundary.
+    let anchor = 'bottom'
+    const map = mapRef.current?.getMap?.()
+    if (map) {
+      const canvas = map.getCanvas()
+      const pt     = map.project([meta.lon, meta.lat])
+      const relX   = pt.x / canvas.clientWidth
+      const relY   = pt.y / canvas.clientHeight
+      if (relY < 0.45)        anchor = 'top'
+      else if (relX < 0.25)   anchor = 'bottom-right'
+      else if (relX > 0.75)   anchor = 'bottom-left'
+      else                    anchor = 'bottom'
+    }
+
     // Open popup immediately with available data
     setPopup({
       ...meta,
@@ -123,6 +144,7 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
       windSpeed,
       electricityRate,
       capacityFactor: staticCapacityFactor,
+      anchor,
     })
     setSelectedState({
       fips,
@@ -143,7 +165,7 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
     setLoadingNrel(true)
     try {
       const { capacityFactor } = await fetchPVWatts(meta.lat, meta.lon)
-      setPopup((prev) => prev ? { ...prev, capacityFactor } : null)
+      setPopup((prev) => prev ? { ...prev, capacityFactor } : null)  // preserve anchor
       setSelectedState({ fips, abbr, name, ghi, windSpeed, electricityRate, capacityFactor })
     } catch {
       // silently degrade — popup still shows without capacity factor
@@ -176,17 +198,18 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
   }), [hoveredFips, energyType])
 
   const linePaint = useMemo(() => ({
-    'line-color': '#fffcca',
+    'line-color': theme === 'dark' ? '#1d1f08' : '#ffffff',
     'line-width': 1,
-  }), [])
+  }), [theme])
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden" style={{ minHeight: 480 }}>
       <Map
+        key={theme}
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={{ longitude: -98.5, latitude: 39.5, zoom: 3.5 }}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle={theme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'}
         onLoad={removeLabelHalo}
         interactiveLayerIds={['state-fill']}
         onMouseMove={handleMouseMove}
@@ -194,7 +217,6 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
         onClick={handleClick}
         style={{ width: '100%', height: '100%' }}
         aria-label={`Interactive U.S. ${energyType === 'wind' ? 'wind resource' : 'solar resource'} map — click a state for details`}
-        reuseMaps
       >
         {enrichedGeoJson && <Source id="us-states" type="geojson" data={enrichedGeoJson}>
           <Layer
@@ -218,6 +240,7 @@ export default function MapContainer({ onNavigate, energyType = 'solar' }) {
         {popup && (
           <StatePopup
             state={popup}
+            anchor={popup.anchor ?? 'bottom'}
             energyType={energyType}
             onClose={() => setPopup(null)}
             onUseInCalculator={handleUseInCalculator}

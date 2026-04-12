@@ -1,6 +1,6 @@
 import { Popup } from 'react-map-gl'
 
-export default function StatePopup({ state, energyType = 'solar', onClose, onUseInCalculator, isLoadingNrel }) {
+export default function StatePopup({ state, anchor = 'bottom', energyType = 'solar', onClose, onUseInCalculator, isLoadingNrel }) {
   if (!state) return null
 
   const { name, ghi, windSpeed, electricityRate, capacityFactor, lat, lon } = state
@@ -12,7 +12,7 @@ export default function StatePopup({ state, energyType = 'solar', onClose, onUse
       onClose={onClose}
       closeButton={false}
       closeOnClick={false}
-      anchor="bottom"
+      anchor={anchor}
       offset={12}
       style={{ fontFamily: 'Manrope, sans-serif' }}
     >
