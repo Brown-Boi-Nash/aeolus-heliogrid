@@ -3,6 +3,21 @@ import {
   BarChart, Bar,
 } from 'recharts'
 
+const THEME_TOKENS = {
+  light: {
+    grid: '#eeebb4',
+    tick: '#414845',
+    accent: '#244a3e',
+    surfaceStroke: '#ffffff',
+  },
+  dark: {
+    grid: '#3d4220',
+    tick: '#b7be9a',
+    accent: '#a6cfbf',
+    surfaceStroke: '#181a06',
+  },
+}
+
 const ChartTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
@@ -20,7 +35,14 @@ const ChartTooltip = ({ active, payload, label }) => {
   )
 }
 
-export default function CapacityTrendChart({ priceData, capacityData, energyType = 'solar' }) {
+export default function CapacityTrendChart({
+  priceData,
+  capacityData,
+  energyType = 'solar',
+  theme = 'light',
+}) {
+  const palette = THEME_TOKENS[theme] ?? THEME_TOKENS.light
+
   return (
     <section
       className="grid grid-cols-1 xl:grid-cols-2 gap-6"
@@ -43,17 +65,17 @@ export default function CapacityTrendChart({ priceData, capacityData, energyType
         ) : (
           <ResponsiveContainer width="100%" height={208}>
             <LineChart data={priceData} margin={{ top: 4, right: 4, bottom: 8, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f0ba" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} vertical={false} />
               <XAxis
                 dataKey="period"
-                tick={{ fontSize: 10, fill: '#717975', fontFamily: 'Manrope', fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: palette.tick, fontFamily: 'Manrope', fontWeight: 700 }}
                 tickFormatter={(v) => v?.slice(0, 7)}
                 interval="preserveStartEnd"
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: '#717975', fontFamily: 'Manrope', fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: palette.tick, fontFamily: 'Manrope', fontWeight: 700 }}
                 tickFormatter={(v) => `$${v.toFixed(2)}`}
                 width={52}
                 axisLine={false}
@@ -65,10 +87,10 @@ export default function CapacityTrendChart({ priceData, capacityData, energyType
                 dataKey="price"
                 name="Price"
                 unit="$/kWh"
-                stroke="#244a3e"
+                stroke={palette.accent}
                 strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 5, fill: '#244a3e', stroke: '#fffcca', strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: palette.accent, stroke: palette.surfaceStroke, strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -97,15 +119,15 @@ export default function CapacityTrendChart({ priceData, capacityData, energyType
         ) : (
           <ResponsiveContainer width="100%" height={208}>
             <BarChart data={capacityData} margin={{ top: 4, right: 4, bottom: 8, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f0ba" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} vertical={false} />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 10, fill: '#717975', fontFamily: 'Manrope', fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: palette.tick, fontFamily: 'Manrope', fontWeight: 700 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: '#717975', fontFamily: 'Manrope', fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: palette.tick, fontFamily: 'Manrope', fontWeight: 700 }}
                 tickFormatter={(v) => `${v.toFixed(0)} GW`}
                 width={60}
                 axisLine={false}
@@ -116,7 +138,7 @@ export default function CapacityTrendChart({ priceData, capacityData, energyType
                 dataKey="capacityGW"
                 name="Capacity"
                 unit=" GW"
-                fill="#244a3e"
+                fill={palette.accent}
                 radius={[2, 2, 0, 0]}
                 maxBarSize={40}
               />

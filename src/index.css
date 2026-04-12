@@ -6,7 +6,138 @@
 
 @layer base {
   :root {
-    --shadow-botanical: 0px 12px 32px rgba(29, 29, 0, 0.06);
+    /* ── Surface hierarchy (parchment stack) ── */
+    --color-surface:                  255 252 202;
+    --color-surface-bright:           255 252 202;
+    --color-surface-dim:              223 221 167;
+    --color-surface-container-lowest: 255 255 255;
+    --color-surface-container-low:    249 246 191;
+    --color-surface-container:        244 240 186;
+    --color-surface-container-high:   238 235 180;
+    --color-surface-container-highest:232 229 175;
+    --color-surface-variant:          232 229 175;
+    --color-surface-tint:             64 102 89;
+    /* ── Text ── */
+    --color-on-surface:               29 29 0;
+    --color-on-surface-variant:       65 72 69;
+    --color-on-background:            29 29 0;
+    --color-inverse-on-surface:       246 243 188;
+    --color-inverse-surface:          51 50 12;
+    /* ── Primary (deep forest green) ── */
+    --color-primary:                  36 74 62;
+    --color-primary-container:        60 98 85;
+    --color-primary-fixed:            194 236 219;
+    --color-primary-fixed-dim:        166 207 191;
+    --color-on-primary:               255 255 255;
+    --color-on-primary-fixed:         0 33 24;
+    --color-on-primary-fixed-variant: 40 78 65;
+    --color-on-primary-container:     178 220 203;
+    --color-inverse-primary:          166 207 191;
+    /* ── Secondary (sage green) ── */
+    --color-secondary:                65 102 79;
+    --color-secondary-container:      192 234 204;
+    --color-secondary-fixed:          195 236 207;
+    --color-secondary-fixed-dim:      168 208 180;
+    --color-on-secondary:             255 255 255;
+    --color-on-secondary-container:   70 107 83;
+    --color-on-secondary-fixed:       0 33 16;
+    --color-on-secondary-fixed-variant:42 78 56;
+    /* ── Tertiary (moss) ── */
+    --color-tertiary:                 55 72 36;
+    --color-tertiary-container:       78 96 58;
+    --color-tertiary-fixed:           212 234 185;
+    --color-tertiary-fixed-dim:       184 206 158;
+    --color-on-tertiary:              255 255 255;
+    --color-on-tertiary-container:    196 218 170;
+    --color-on-tertiary-fixed:        16 32 2;
+    --color-on-tertiary-fixed-variant:58 76 40;
+    /* ── Error ── */
+    --color-error:                    186 26 26;
+    --color-error-container:          255 218 214;
+    --color-on-error:                 255 255 255;
+    --color-on-error-container:       147 0 10;
+    /* ── Outline ── */
+    --color-outline:                  113 121 117;
+    --color-outline-variant:          193 200 195;
+    /* ── Elevation & decoration ── */
+    --shadow-botanical:    0px 12px 32px rgba(29, 29, 0, 0.06);
+    --shadow-botanical-lg: 0px 20px 48px rgba(29, 29, 0, 0.08);
+    --shadow-chat:         0px 8px 24px rgba(29, 29, 0, 0.08);
+    --gradient-botanical:  linear-gradient(135deg, rgb(36 74 62) 0%, rgb(60 98 85) 100%);
+    --glass-nav-background: rgba(255, 252, 202, 0.75);
+    --focus-ring:          rgb(36 74 62);
+    --chart-grid:          rgb(238 235 180);
+    --chart-accent:        rgb(36 74 62);
+    --chart-surface-stroke:rgb(255 255 255);
+    --map-label-color:     #2b3430;
+  }
+
+  html.dark {
+    /* ── Surface hierarchy (warm dark parchment) ── */
+    --color-surface:                  20 21 6;
+    --color-surface-bright:           28 30 8;
+    --color-surface-dim:              12 13 3;
+    --color-surface-container-lowest: 24 26 6;
+    --color-surface-container-low:    29 31 8;
+    --color-surface-container:        35 37 11;
+    --color-surface-container-high:   42 45 14;
+    --color-surface-container-highest:50 54 19;
+    --color-surface-variant:          61 66 32;
+    --color-surface-tint:             166 207 191;
+    /* ── Text ── */
+    --color-on-surface:               230 227 176;
+    --color-on-surface-variant:       183 190 154;
+    --color-on-background:            230 227 176;
+    --color-inverse-on-surface:       29 29 0;
+    --color-inverse-surface:          230 227 176;
+    /* ── Primary (light forest green for dark bg) ── */
+    --color-primary:                  166 207 191;
+    --color-primary-container:        42 74 64;
+    --color-primary-fixed:            194 236 219;
+    --color-primary-fixed-dim:        166 207 191;
+    --color-on-primary:               0 33 24;
+    --color-on-primary-fixed:         0 33 24;
+    --color-on-primary-fixed-variant: 40 78 65;
+    --color-on-primary-container:     194 236 219;
+    --color-inverse-primary:          36 74 62;
+    /* ── Secondary ── */
+    --color-secondary:                168 208 180;
+    --color-secondary-container:      42 78 56;
+    --color-secondary-fixed:          195 236 207;
+    --color-secondary-fixed-dim:      168 208 180;
+    --color-on-secondary:             0 33 16;
+    --color-on-secondary-container:   195 236 207;
+    --color-on-secondary-fixed:       0 33 16;
+    --color-on-secondary-fixed-variant:42 78 56;
+    /* ── Tertiary ── */
+    --color-tertiary:                 184 206 158;
+    --color-tertiary-container:       58 76 40;
+    --color-tertiary-fixed:           212 234 185;
+    --color-tertiary-fixed-dim:       184 206 158;
+    --color-on-tertiary:              16 32 2;
+    --color-on-tertiary-container:    212 234 185;
+    --color-on-tertiary-fixed:        16 32 2;
+    --color-on-tertiary-fixed-variant:58 76 40;
+    /* ── Error ── */
+    --color-error:                    255 180 171;
+    --color-error-container:          105 0 5;
+    --color-on-error:                 105 0 5;
+    --color-on-error-container:       255 218 214;
+    /* ── Outline ── */
+    --color-outline:                  138 146 134;
+    --color-outline-variant:          65 72 69;
+    /* ── Elevation & decoration ── */
+    --shadow-botanical:    0px 14px 36px rgba(0, 0, 0, 0.45);
+    --shadow-botanical-lg: 0px 24px 54px rgba(0, 0, 0, 0.55);
+    --shadow-chat:         0px 10px 28px rgba(0, 0, 0, 0.40);
+    --gradient-botanical:  linear-gradient(135deg, rgb(36 74 62) 0%, rgb(60 98 85) 100%);
+    --glass-nav-background: rgba(20, 21, 6, 0.85);
+    --focus-ring:          rgb(166 207 191);
+    --chart-grid:          rgb(61 66 32);
+    --chart-accent:        rgb(166 207 191);
+    --chart-surface-stroke:rgb(24 26 6);
+    --map-label-color:     #e6e3b0;
+    color-scheme: dark;
   }
 
   html {
@@ -16,10 +147,11 @@
 
   body {
     font-family: 'Manrope', system-ui, sans-serif;
-    background-color: #fffcca; /* surface */
-    color: #1d1d00;             /* on-surface */
+    background-color: rgb(var(--color-surface));
+    color: rgb(var(--color-on-surface));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
   /* Skip-to-content link for keyboard/screen-reader users */
@@ -30,7 +162,7 @@
 
   /* Focus styles — visible ring for keyboard nav, suppressed for mouse */
   :focus-visible {
-    outline: 2px solid #244a3e;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
     border-radius: 0.25rem;
   }
@@ -48,14 +180,15 @@
 @layer components {
   /* Glassmorphism nav */
   .glass-nav {
-    background: rgba(255, 252, 202, 0.75);
+    background: var(--glass-nav-background);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgb(var(--color-outline-variant) / 0.18);
   }
 
   /* Botanical gradient (hero cards) */
   .bg-botanical-gradient {
-    background: linear-gradient(135deg, #244a3e 0%, #3c6255 100%);
+    background: var(--gradient-botanical);
   }
 
   /* Label style from design doc */
@@ -85,12 +218,12 @@
   /* Thin custom scrollbar */
   .scrollbar-botanical {
     scrollbar-width: thin;
-    scrollbar-color: #e8e5af transparent;
+    scrollbar-color: rgb(var(--color-outline-variant)) transparent;
   }
   .scrollbar-botanical::-webkit-scrollbar { width: 4px; }
   .scrollbar-botanical::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-botanical::-webkit-scrollbar-thumb {
-    background: #e8e5af;
+    background: rgb(var(--color-outline-variant));
     border-radius: 10px;
   }
 
@@ -104,4 +237,17 @@
   .animate-fade-in {
     animation: fadeIn 0.25s ease-out;
   }
+}
+
+/* ── Mapbox popup reset — strip default white box/border so our card shows through ── */
+.mapboxgl-popup-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.mapboxgl-popup-tip {
+  display: none !important;
 }
