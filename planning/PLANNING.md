@@ -5,6 +5,17 @@
 
 ---
 
+## Project Name — Aeolus HelioGrid
+
+The name draws from Greek mythology to reflect the dual focus of the dashboard:
+
+- **Aeolus** — the Greek god of wind, representing the wind energy side of the analysis
+- **Helios** — the Greek god of the sun, representing the solar energy side
+
+**HelioGrid** combines Helios with "grid" — the electricity grid that renewable projects feed into. Together, *Aeolus HelioGrid* captures the full scope of the platform: a single analytical grid for both wind and solar investment decisions.
+
+---
+
 ## Tech Stack
 
 **Framework / Language:** React + Vite (JavaScript/JSX)
