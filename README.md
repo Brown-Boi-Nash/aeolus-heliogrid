@@ -1,83 +1,140 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/hl3jCjv_)
-# CDF AI Engineering Hackathon
 
-**Live URL:** `TBD - add Vercel deployment URL`
+# Aeolus HelioGrid — U.S. Renewable Energy Investment Dashboard
 
-Welcome! This is your personal repository for the CDF AI Engineering Hackathon. The problem statement is included in this repo - read it carefully before you start.
+## 🌐 Live URL: [https://aeolus-heliogrid.vercel.app](https://aeolus-heliogrid.vercel.app)
 
----
-
-## 📋 Problem Statement
-
-See [`PROBLEM_STATEMENT.md`](./PROBLEM_STATEMENT.md) for the full brief.
+> CDF AI Engineering Hackathon · April 2026 · Built by **Brown-Boi-Nash**
 
 ---
 
-## 🗂️ Repo Structure
+## What It Does
 
+Aeolus HelioGrid is a four-tab investment analysis dashboard that helps analysts evaluate U.S. solar and wind energy opportunities using live public data.
+
+| Tab | Description |
+|-----|-------------|
+| **Market Overview** | Live EIA electricity prices, installed capacity trends, Top 5 states leaderboard, grid parity analysis vs NREL ATB 2024 |
+| **Project Economics** | Interactive IRR/NPV/LCOE/payback calculator with 3 scenarios, sensitivity heatmap, 20-year cash flow chart, MACRS depreciation, PPA mode, P90 downside IRR |
+| **Research Assistant** | Gemini 2.5 Flash Lite AI grounded in live dashboard context — chat Q&A and AI-generated investment memos |
+| **Geographic Map** | Mapbox choropleth of solar/wind resources by state — click any state to apply live NREL + EIA data to the calculator |
+
+---
+
+## Cross-Tab Data Flows
+
+1. **Market → Calculator**: EIA national electricity price auto-seeds the calculator's revenue rate on first load
+2. **Map → Calculator**: Clicking a state fetches live NREL PVWatts capacity factor + EIA state electricity rate, pre-fills the calculator, and navigates to Tab 2
+
+---
+
+## Tech Stack
+
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Framework | React + Vite | Fast DX, instant HMR, clean SPA output |
+| Styling | Tailwind CSS + CSS custom properties | Botanical Ledger design system with full dark mode support |
+| State | Zustand | Selector-based subscriptions — calculator inputs don't re-render map tab |
+| Data fetching | SWR | Stale-while-revalidate dedup — EIA calls shared across Tab 1 and Tab 4 |
+| Charts | Recharts | Declarative, composable, lightweight |
+| Map | react-map-gl + Mapbox GL JS | Vector choropleth with GeoJSON layer, dark/light style switching |
+| AI | Google Gemini 2.5 Flash Lite | Free tier, low latency, grounded with live dashboard context |
+| Deployment | Vercel | Zero-config Vite deploy + serverless functions for API key security |
+
+---
+
+## Features Implemented
+
+**Tier 1 — Core (all complete):**
+- ✅ Market Overview with live EIA data and trend charts
+- ✅ Project Economics calculator (IRR, NPV, LCOE, payback, cash flow)
+- ✅ Research Assistant with live context injection and source citations
+- ✅ Geographic Map with state choropleth and click-to-calculator cross-tab flow
+- ✅ Two live cross-tab data flows
+- ✅ Live deployment on Vercel
+
+**Tier 2 — Stretch (all implemented):**
+- ✅ IRR sensitivity heatmap (electricity rate × install cost, 10% hurdle breakeven)
+- ✅ AI-generated investment memo (structured 7-section output)
+- ✅ Data provenance — every metric cites its source and fetch time
+- ✅ Export PDF (investment memo)
+- ✅ MACRS accelerated depreciation (IRS 5-year schedule, §168(k) basis adjustment)
+- ✅ Named saved scenarios with inline rename
+- ✅ P90 downside IRR (NREL convention — capacity factor × 0.90)
+- ✅ PPA mode toggle (75% of retail rate for utility-scale projects)
+- ✅ Grid Parity Status with NREL ATB 2024 LCOE benchmarks
+- ✅ Top States Leaderboard (resource 40% + rate 35% + policy 25% scoring)
+- ✅ Dark mode with botanical warm-dark palette
+- ✅ FRED macro data hints (10Y Treasury, Fed Funds, breakeven inflation)
+- ✅ Onboarding tour
+
+---
+
+## Security
+
+- `GEMINI_API_KEY` lives in Vercel serverless functions only — never bundled into client JS
+- FRED API routed through `/fred-api/` server proxy to avoid CORS
+- All other keys are free-tier public APIs designed for browser use
+- AI guardrails: scope-restricted system prompt, 500-char input limit, jailbreak refusal
+
+---
+
+## Local Development
+
+```bash
+# 1. Clone
+git clone https://github.com/Community-Dreams-Foundation-Hackathons/renewable-energy-analysis-dashboard-Brown-Boi-Nash-1.git
+
+# 2. Install
+npm install
+
+# 3. Environment variables — create .env.local with:
+VITE_EIA_API_KEY=your_key
+VITE_NREL_API_KEY=your_key
+VITE_FRED_API_KEY=your_key
+VITE_MAPBOX_TOKEN=your_token
+GEMINI_API_KEY=your_key        # server-only, no VITE_ prefix
+
+# 4. Run
+npm run dev
 ```
-├── README.md               # This file — live URL and submission checklist
-├── PROBLEM_STATEMENT.md    # Full hackathon brief
-├── planning/
-│   └── PLANNING.md         # Your planning document (fill this out first)
-├── src/                    # Your application code goes here
-└── docs/
-    ├── walkthrough.md      # Link to your 5-minute walkthrough video
-    ├── architecture.md     # Your architecture overview
-    └── reflection.md       # What you built, tradeoffs, AI tools used
-```
 
 ---
 
-## 🚀 Getting Started
+## AI Tools Used
 
-1. Install dependencies:
-   - `npm install`
-2. Create `.env.local` with:
-   - `VITE_EIA_API_KEY=...`
-   - `VITE_NREL_API_KEY=...`
-   - `VITE_GEMINI_API_KEY=...`
-   - `VITE_MAPBOX_TOKEN=...`
-3. Run locally:
-   - `npm run dev`
-4. Build for production:
-   - `npm run build`
-5. Preview production build:
-   - `npm run preview`
+Built with **Claude Code (Anthropic)** as the primary AI coding assistant:
+- Component architecture, state management, and cross-tab data flow design
+- Financial model (IRR bisection, NPV, LCOE, MACRS depreciation, P90, PPA)
+- API integrations (EIA, NREL, FRED, Gemini, Mapbox)
+- UI/UX design system (Botanical Ledger — parchment palette, dark mode)
+- Security hardening (Gemini serverless proxy, CORS fixes, AI guardrails)
 
-## ☁️ Vercel Deployment
-
-1. Import this repo into Vercel.
-2. Set Framework Preset to `Vite` (auto-detected in most cases).
-3. Add the same environment variables from `.env.local` in Vercel Project Settings.
-4. Deploy and verify all four tabs load with live API data.
-5. Replace the `Live URL` line at the top of this README with the deployed URL.
+All implementation choices, assumptions, and code were reviewed and validated throughout development.
 
 ---
 
-## 📦 Submission Checklist
+## Walkthrough Video
 
-Push to your GitHub Classroom repository before **April 12, 2026 at 1:00 PM EST**. Your repo state at the deadline is your submission.
-
-- [ ] Live deployment URL added at the top of this README — **mandatory**
-- [ ] Completed planning document in `planning/PLANNING.md`
-- [ ] Working application in `src/`
-- [ ] `docs/walkthrough.md` — walkthrough video link filled in
-- [ ] `docs/architecture.md` — architecture overview filled in
-- [ ] `docs/reflection.md` — reflection filled in
-- [ ] Clean commit history — see note below
+📹 **[Watch the 5-minute demo](docs/walkthrough.md)** *(link TBD — add before deadline)*
 
 ---
 
-## 📝 A Note on Commit History
+## Docs
 
-Your git commit history is part of the evaluation. Here is what a clean history looks like:
-
-- **Commit regularly** — at least once per meaningful chunk of work (e.g. "Add IRR calculation", "Integrate EIA API", "Build map tab")
-- **Write descriptive messages** — not "fix", "update", or "asdf". A good message tells someone what changed and why
-- **Do not squash everything into one commit** at the end — we should be able to follow your progress through the history
-- **Do not commit API keys, `.env` files, or `node_modules`** — use `.gitignore`
-
-Think of your commit history as a log of how you think and work, not just a save button.
+- [Planning Document](planning/PLANNING.md)
+- [Architecture Overview](docs/architecture.md)
+- [Reflection](docs/reflection.md)
+- [Walkthrough](docs/walkthrough.md)
 
 ---
+
+## Submission Checklist
+
+- [x] Live deployment URL at top of README
+- [x] Planning document — `planning/PLANNING.md`
+- [x] Architecture overview — `docs/architecture.md`
+- [x] Reflection — `docs/reflection.md`
+- [ ] Walkthrough video link — `docs/walkthrough.md` *(record and add before deadline)*
+- [x] Clean commit history
+- [x] No API keys committed

@@ -2,10 +2,10 @@
 
 ## System Overview
 
-The Botanical Ledger is a single-page React application (Vite) deployed on Vercel.
-All data fetching is client-side. There is no custom backend — API keys are scoped
-to client-safe public APIs (EIA, NREL, Mapbox) and the Gemini SDK runs directly
-in the browser.
+Aeolus HelioGrid is a single-page React application (Vite) deployed on Vercel.
+Most data fetching is client-side. Gemini AI calls are routed through Vercel
+serverless functions so the API key is never bundled into the client JS.
+The FRED API is proxied through Vercel rewrites to avoid browser CORS restrictions.
 
 ---
 
@@ -35,18 +35,22 @@ in the browser.
 │  │   └─────┬──────┘  └─────┬──────┘  └────┬─────┘  └───┬───┘  │   │
 │  └─────────┼───────────────┼───────────────┼─────────────┼──────┘   │
 └────────────┼───────────────┼───────────────┼─────────────┼──────────┘
-             │               │               │             │
-             ▼               ▼               ▼             ▼
-        ┌────────┐      ┌─────────┐   ┌──────────┐  ┌──────────┐
-        │  EIA   │      │Financial│   │  Gemini  │  │  NREL    │
-        │  API   │      │ Calc Lib│   │2.5 Flash │  │ PVWatts  │
-        │        │      │(pure JS)│   │   Lite   │  │   API    │
-        └────────┘      └─────────┘   └──────────┘  └──────────┘
-                                                          +
-                                                     ┌──────────┐
-                                                     │  Mapbox  │
-                                                     │  GL JS   │
-                                                     └──────────┘
+             │               │           POST /api/*        │
+             ▼               ▼               │             ▼
+        ┌────────┐      ┌─────────┐   ┌──────▼───┐  ┌──────────┐
+        │  EIA   │      │Financial│   │  Vercel  │  │  NREL    │
+        │  API   │      │ Calc Lib│   │Serverless│  │ PVWatts  │
+        │        │      │(pure JS)│   │Functions │  │   API    │
+        └────────┘      └─────────┘   └────┬─────┘  └──────────┘
+                                           │              +
+                                           ▼         ┌──────────┐
+                                      ┌──────────┐   │  Mapbox  │
+                                      │  Gemini  │   │  GL JS   │
+                                      │2.5 Flash │   └──────────┘
+                                      │   Lite   │
+                                      └──────────┘
+
+        FRED API → browser fetches /fred-api/* → Vercel rewrites to api.stlouisfed.org
 ```
 
 ---
@@ -209,17 +213,44 @@ dashboardStore  (subscribeWithSelector middleware)
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│  Google Gemini API  (generativelanguage.googleapis.com)         │
+│  Google Gemini API  (via Vercel serverless functions)           │
 │                                                                 │
 │  Model: gemini-2.5-flash-lite                                   │
-│  SDK: @google/generative-ai (browser-side)                      │
+│  Key location: GEMINI_API_KEY — server env only, never bundled  │
 │                                                                 │
-│  System prompt injected on every call includes:                 │
-│    - Live EIA electricity price + total solar capacity          │
+│  api/gemini-chat.js   — POST /api/gemini-chat                   │
+│    Receives: { userMessage, context }                           │
+│    Sanitizes input: strips control chars, enforces 500-char cap │
+│    Builds system prompt server-side with scope guardrails       │
+│    Calls Gemini REST API, returns { text }                      │
+│                                                                 │
+│  api/gemini-memo.js   — POST /api/gemini-memo                   │
+│    Generates structured 7-section investment memo from context  │
+│                                                                 │
+│  Context injected (from client via POST body):                  │
+│    - Live EIA electricity price + total solar/wind capacity     │
 │    - Current calculator scenario + IRR/NPV/LCOE/payback         │
-│    - Selected state name + GHI from map                         │
+│    - Selected state name + GHI/wind speed from map              │
+│    - FRED macro data: 10Y Treasury, Fed Funds, inflation        │
+│    - State policy/incentive summary (resolved client-side)      │
+│                                                                 │
+│  AI guardrails: scope-restricted system prompt, jailbreak       │
+│    refusal instruction, 500-char input limit enforced both      │
+│    client-side (textarea) and server-side (slice+sanitize)      │
 │                                                                 │
 │  Response text scanned for keywords → citation badge rendering  │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  FRED API  (api.stlouisfed.org) — proxied                       │
+│                                                                 │
+│  Browser fetches /fred-api/fred/series/observations?...         │
+│  Vercel rewrite: /fred-api/* → https://api.stlouisfed.org/*     │
+│  Dev proxy: Vite server.proxy mirrors same path rewrite         │
+│                                                                 │
+│  Series fetched: DGS10 (10Y Treasury), FEDFUNDS, T10YIE        │
+│    → displayed as macro context hints in Market Overview         │
+│    → injected into Gemini context for grounded AI responses     │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -293,6 +324,10 @@ src/
 │
 └── assets/
     └── us-states.geojson           US Census TIGER simplified polygons (89KB)
+
+api/                                Vercel serverless functions (Node.js)
+├── gemini-chat.js                  POST /api/gemini-chat — AI chat proxy
+└── gemini-memo.js                  POST /api/gemini-memo — Investment memo generator
 ```
 
 ---
@@ -305,10 +340,12 @@ src/
 | SWR over React Query | Smaller bundle; stale-while-revalidate semantics match EIA polling cadence; no mutations needed |
 | Pre-bundle GHI values | NREL free tier is rate-limited — calling all 50 states at load would exhaust quota. Live NREL calls reserved for the clicked state only |
 | Bisection IRR solver | Handles edge cases (no sign change, multiple IRRs) correctly vs. naive stepped search |
-| `systemInstruction` on `getGenerativeModel()` | Required by Gemini SDK — passing it to `startChat()` is silently ignored and causes failures |
+| Gemini via serverless functions | `GEMINI_API_KEY` must never appear in client JS (bundled by Vite's env injection). Serverless functions run server-side only, keeping the key unexposed. The browser-side `@google/generative-ai` SDK was removed entirely |
+| FRED proxy via Vercel rewrite | `api.stlouisfed.org` sends `Vary: Origin` without CORS headers for browser requests. A Vercel rewrite (`/fred-api/*`) acts as a server-side relay, bypassing the restriction without a dedicated function |
+| `key={theme}` on Mapbox `<Map>` | Changing `mapStyle` while `reuseMaps` is set triggers a `removeSource` race that crashes the map. Forcing a fresh mount on theme change is the only reliable fix |
+| Dark mode via `html.dark` CSS class | All color tokens are CSS custom properties (space-separated RGB channels). Toggling `html.dark` rewrites every token in one paint — no JS color interpolation, no Tailwind `dark:` variants scattered across components |
 | GeoJSON via `?url` import | Vite cannot statically import `.geojson` without a plugin; URL import + runtime fetch avoids the build error cleanly |
 | Botanical Ledger design system | Tonal layering (no 1px borders), parchment palette, Manrope font — differentiates from generic SaaS blue templates |
-| No custom backend | EIA and NREL keys are low-risk public API keys; Gemini and Mapbox keys restricted by referer in production |
 
 ---
 
@@ -318,6 +355,8 @@ src/
 |--------------|----------------------|--------|
 | Mock AI chat | Real Gemini 2.5 Flash Lite | Gemini free tier obtained |
 | OpenAI as AI provider | Google Gemini | Free tier, no billing required |
+| Browser-side Gemini SDK | Vercel serverless functions (`api/gemini-chat.js`, `api/gemini-memo.js`) | API key security — `VITE_` prefix would bundle the key into client JS |
+| Direct FRED API calls | Proxied via `/fred-api/*` Vercel rewrite + Vite dev proxy | CORS — stlouisfed.org blocks browser requests |
 | Pre-fetch all 50 NREL states | Pre-bundle GHI from NSRDB, live PVWatts on click only | Rate limit protection |
 | mathjs for IRR | Custom bisection in financialCalc.js | mathjs IRR API is not straightforward; bisection is more transparent |
 
@@ -330,4 +369,10 @@ src/
 | Global error resilience | App-level React Error Boundary wraps `App` in `main.jsx` and presents a graceful fallback with reload action |
 | Sensitivity analysis stretch goal | Added 5x5 IRR sensitivity heatmap on Project Economics tab (`electricityRate` vs `installCostPerW`, +/-20%) |
 | Data provenance stretch goal | Added provenance panels with source attribution and fetch context to Market, Map, and Calculator tabs |
+| AI investment memo | Structured 7-section memo generated by `api/gemini-memo.js`, exportable as PDF |
+| Dark mode | Full `html.dark` CSS custom property system; Mapbox style switches between `light-v11` / `dark-v11`; map remounts on theme change via `key={theme}` |
+| FRED macro hints | 10Y Treasury, Fed Funds Rate, breakeven inflation surfaced in Market Overview and injected into Gemini context |
+| AI guardrails | Server-side scope restriction prompt, jailbreak refusal, 500-char sanitized input limit, generic client error message |
+| Named scenarios | Calculator supports Base / Optimistic / Conservative with inline rename; P90 downside IRR; PPA mode toggle |
+| MACRS depreciation | IRS 5-year accelerated schedule with §168(k) bonus depreciation basis adjustment |
 | Responsive polish | Improved map container sizing and Research Assistant viewport behavior on smaller screens |
