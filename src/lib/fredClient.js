@@ -1,8 +1,9 @@
 const FRED_KEY = import.meta.env.VITE_FRED_API_KEY
-const BASE = 'https://api.stlouisfed.org/fred/series/observations'
+// Use Vite proxy in dev to avoid CORS; in production the host must proxy /fred-api itself
+const BASE = '/fred-api/fred/series/observations'
 
 async function fetchLatest(seriesId) {
-  const url = new URL(BASE)
+  const url = new URL(BASE, window.location.origin)
   url.searchParams.set('series_id', seriesId)
   url.searchParams.set('api_key', FRED_KEY)
   url.searchParams.set('sort_order', 'desc')
