@@ -61,15 +61,18 @@ The FRED API is proxied through Vercel rewrites to avoid browser CORS restrictio
 App.jsx  (Headlessui Tab.Group — glassmorphism nav)
 │
 ├── Tab 1: MarketOverview/
-│   ├── index.jsx            ← calls useEiaData(), reads Zustand marketSlice
-│   ├── MetricsGrid          ← 4× MetricCard (EIA live values)
-│   └── CapacityTrendChart   ← Recharts LineChart + BarChart
+│   ├── index.jsx              ← calls useEiaData(), reads Zustand marketSlice
+│   ├── MetricsGrid            ← 4× MetricCard (EIA live values)
+│   ├── CapacityTrendChart     ← Recharts LineChart + BarChart
+│   ├── TopStatesLeaderboard   ← weighted composite ranking (see Methodology)
+│   └── GridParityStatus       ← LCOE vs. NREL ATB 2024 benchmarks
 │
 ├── Tab 2: Calculator/
-│   ├── index.jsx            ← reads selectedStateAbbr from Zustand
-│   ├── InputPanel.jsx       ← writes to calculatorSlice via setCalculatorInput
-│   ├── OutputPanel.jsx      ← reads from useCalculator() hook (derived)
-│   └── CashFlowSection.jsx  ← horizontal bar chart (Botanical Ledger style)
+│   ├── index.jsx              ← reads selectedStateAbbr from Zustand
+│   ├── InputPanel.jsx         ← writes to calculatorSlice via setCalculatorInput
+│   ├── OutputPanel.jsx        ← reads from useCalculator() hook (derived)
+│   ├── CashFlowSection.jsx    ← horizontal bar chart (Botanical Ledger style)
+│   └── SensitivityHeatmap     ← 5×5 IRR grid (electricityRate × installCostPerW)
 │
 ├── Tab 3: ResearchAssistant/
 │   ├── index.jsx            ← sends to geminiClient, reads full context from Zustand
@@ -113,6 +116,14 @@ dashboardStore  (subscribeWithSelector middleware)
 │   │                                 electricityRate, capacityFactor,
 │   │                                 lat, lon } | null
 │   └── hoveredFips               : string | null
+│
+├── fredSlice
+│   ├── treasury10Y               : number | null   (DGS10 — 10Y Treasury yield %)
+│   ├── fedFunds                  : number | null   (FEDFUNDS — Fed Funds Rate %)
+│   └── breakEvenInflation        : number | null   (T10YIE — 10Y breakeven inflation %)
+│
+├── uiSlice
+│   └── energyType                : 'solar' | 'wind'
 │
 └── chatSlice
     ├── chatMessages              : { id, role, text, citations, timestamp }[]
@@ -284,7 +295,8 @@ src/
 ├── lib/
 │   ├── eiaClient.js                EIA fetch functions (3 endpoints)
 │   ├── nrelClient.js               NREL PVWatts + Solar Resource fetchers
-│   ├── geminiClient.js             Gemini SDK wrapper + context injection
+│   ├── geminiClient.js             fetch() wrapper for /api/gemini-chat and /api/gemini-memo
+│   ├── fredClient.js               FRED API fetch (proxied via /fred-api/*)
 │   ├── financialCalc.js            Pure: buildCashFlows, calcIRR, calcNPV,
 │   │                               calcLCOE, calcPayback, applyScenario
 │   └── dataNormalizer.js           Raw API → app-shaped data transforms
@@ -329,6 +341,139 @@ api/                                Vercel serverless functions (Node.js)
 ├── gemini-chat.js                  POST /api/gemini-chat — AI chat proxy
 └── gemini-memo.js                  POST /api/gemini-memo — Investment memo generator
 ```
+
+---
+
+## Financial & Ranking Methodology
+
+### Top States Leaderboard — Composite Scoring
+
+Each of the 50 states (excluding DC) is scored using a **weighted composite** of three normalized components:
+
+```
+Composite = (Resource × 0.40) + (Rate × 0.35) + (Policy × 0.25)
+```
+
+All component scores are normalized to [0, 1] before weighting. The composite is multiplied by 100 for display.
+
+**Resource Score (40%)** — min-max normalization across all 50 states
+
+```
+normalize(value, min, max) = (value − min) / (max − min)   clamped to [0, 1]
+```
+
+- Solar mode: uses pre-bundled GHI (kWh/m²/day) from `constants/stateMetadata.js` (NREL NSRDB)
+- Wind mode: uses pre-bundled average wind speed (m/s) from the same source
+- Min and max are computed dynamically from the full 50-state array each render, so the best state always scores 1.0 and the worst always scores 0.0
+
+**Rate Score (35%)** — same min-max normalization applied to **live EIA state retail prices**
+
+- Higher electricity rate → higher score. Rationale: a state with $0.25/kWh offers more revenue potential than one at $0.08/kWh for the same project output.
+- Min/max derived from the live `statePrices` map fetched from EIA. States with no live price are excluded from the ranking entirely.
+
+**Policy Score (25%)** — fixed point tally (max 1.0)
+
+| Policy factor | Points |
+|---|---|
+| RPS (Renewable Portfolio Standard) mandate | 0.35 |
+| Net metering — full retail | 0.30 |
+| Net metering — virtual | 0.20 |
+| Net metering — limited | 0.12 |
+| Property tax exemption on solar/wind installations | 0.20 |
+| Sales tax exemption on equipment | 0.10 |
+| State-level tax credit or direct incentive | 0.05 |
+
+Source: `constants/statePolicies.js` — static lookup table based on DSIRE database.
+
+---
+
+### Financial Calculator — Calculation Methods
+
+**Cash Flow Construction (`buildCashFlows`)**
+
+```
+Year 0 (equity outlay):
+  CF[0] = −(capex × (1 − debtFraction) − capex × itcPercent)
+  where capex = systemSizeKW × 1000 × installCostPerW
+
+Year N (1 to projectLifeYears):
+  annualEnergyKWh = systemSizeKW × 8760 × capacityFactor × (1 − degradationRate)^N
+  revenue         = annualEnergyKWh × electricityRate × (1 + escalationRate)^N
+  omCost          = systemSizeKW × omCostPerKWPerYear × (1 + escalationRate)^N
+  debtService     = annualDebtPayment  (fixed, computed from loanTermYears + interestRate)
+  depreciation    = capex × MACRS_SCHEDULE[N]  (IRS 5-year, §168(k) bonus-adjusted basis)
+  taxSaving       = depreciation × TAX_RATE     (passed through as positive cash flow)
+  CF[N] = revenue − omCost − debtService + taxSaving
+```
+
+**PPA mode:** `electricityRate` is replaced by `electricityRate × 0.75` (75% of retail — utility-scale power purchase agreement convention).
+
+**P90 downside IRR:** Re-runs all calculations with `capacityFactor × 0.90` (NREL P90 convention — 90th-percentile conservative resource estimate).
+
+**MACRS Depreciation (IRS 5-year, §168(k))**
+
+```
+Depreciable basis = capex × (1 − itcPercent / 2)   [§168(k) ITC basis reduction]
+Year 1: 20.00%   Year 2: 32.00%   Year 3: 19.20%
+Year 4: 11.52%   Year 5: 11.52%   Year 6:  5.76%
+```
+
+**IRR (`calcIRR`) — Bisection solver**
+
+```
+Search bounds: r_low = −0.50, r_high = 5.00
+Loop: r_mid = (r_low + r_high) / 2
+      NPV_mid = Σ CF[n] / (1 + r_mid)^n
+      if NPV_mid > 0: r_low = r_mid  else: r_high = r_mid
+Until |NPV_mid| < 1e-6 or max 200 iterations
+Returns null if NPV never changes sign (project always negative)
+```
+
+Bisection was chosen over Newton-Raphson because it guarantees convergence within bounds and handles edge cases (sign never changes, flat cash flows) without diverging.
+
+**NPV (`calcNPV`)**
+
+```
+NPV = Σ [ CF[n] / (1 + discountRate)^n ]   for n = 0 to projectLifeYears
+```
+
+Default discount rate: 8% (configurable via calculator input).
+
+**Payback Period (`calcPayback`)**
+
+```
+Cumulative = 0
+For n = 1 to N:
+  Cumulative += CF[n]
+  if Cumulative ≥ |CF[0]|:
+    return (n − 1) + (|CF[0]| − prev_cumulative) / CF[n]   [fractional year interpolation]
+Returns null if payback not achieved within project life
+```
+
+**LCOE (`calcLCOE`) — Levelized Cost of Energy**
+
+```
+LCOE = Σ [ Cost[n] / (1 + r)^n ]  /  Σ [ Energy[n] / (1 + r)^n ]
+
+where:
+  Cost[n]   = capex (year 0 only) + omCost[n] + debtService[n]
+  Energy[n] = annualEnergyKWh[n]  (degraded by degradationRate each year)
+  r         = discountRate
+```
+
+**Scenario Multipliers**
+
+| Scenario | Capacity Factor | Electricity Rate | Install Cost/W |
+|---|---|---|---|
+| Optimistic | × 1.10 | × 1.10 | × 0.90 |
+| Base | × 1.00 | × 1.00 | × 1.00 |
+| Conservative | × 0.90 | × 0.90 | × 1.10 |
+
+Applied in `useCalculator()` before all calculations run.
+
+**IRR Sensitivity Heatmap**
+
+A 5×5 matrix computed via `useMemo` — 25 separate `calcIRR()` calls with `electricityRate` and `installCostPerW` each varied ±20% in 4 equal steps. Cells are color-coded: green if IRR ≥ 10% hurdle rate, red if below.
 
 ---
 

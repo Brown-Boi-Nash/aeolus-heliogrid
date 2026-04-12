@@ -53,6 +53,46 @@
 
 ---
 
+## Architecture Overview
+
+### Data Flow Between Components
+
+```
+  EIA API ──► useEiaData (SWR)
+                    │
+                    ├──► marketSlice (Zustand)
+                    │         │
+                    │         ├──► Tab 1 (Market Overview): price chart, capacity chart
+                    │         ├──► Tab 4 (Geographic Map): state price popups
+                    │         └──► initializeCalculatorFromMarket() [CROSS-TAB FLOW #1]
+                    │                       │
+                    │                       ▼
+  NREL API ─────────────────────────► calculatorSlice (Zustand)
+  (on state click)  │                       │
+                    │                       ▼
+  Tab 4 Map Click ──► applyStateToCalculator() ──► Tab 2 Calculator [CROSS-TAB FLOW #2]
+                                                         │
+                                                         ▼
+                                                 useCalculator() (useMemo)
+                                                 IRR / NPV / LCOE / Payback
+                                                         │
+                                                         ▼
+                                                  OutputPanel + Charts
+
+  Tab 3 Research Assistant
+    └─ reads calculatorSlice + marketSlice from Zustand
+    └─ POSTs context to /api/gemini-chat (Vercel serverless)
+    └─ Gemini API key stays server-side only
+```
+
+**State management:** Zustand with `subscribeWithSelector` — each tab subscribes only to the slice fields it needs, preventing unnecessary re-renders across tabs.
+
+**Cross-tab flows (2 required):**
+1. EIA national price → seeds calculator `electricityRate` on first load
+2. Map state click → NREL PVWatts capacity factor + EIA state rate → pre-fills calculator + navigates to Tab 2
+
+---
+
 ## TODO (Post-Core Improvements)
 
 - Add a first-time user onboarding flow:
