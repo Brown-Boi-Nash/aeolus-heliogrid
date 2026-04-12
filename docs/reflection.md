@@ -39,4 +39,9 @@
   - Security hardening (Gemini serverless proxy, CORS fixes, AI guardrails)
   - Debugging integration issues across EIA/NREL/Gemini/Mapbox clients
 
+- **Google Stitch** was used for UI design:
+  - Generating the initial visual layout and component structure for the dashboard
+  - Exploring design directions for the four-tab interface before implementation
+  - Informing the Botanical Ledger design system (color palette, card layouts, spacing)
+
 All implementation choices, assumptions, and code were reviewed and validated throughout development.

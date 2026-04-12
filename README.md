@@ -103,12 +103,17 @@ npm run dev
 
 ## AI Tools Used
 
-Built with **Claude Code (Anthropic)** as the primary AI coding assistant:
+**Claude Code (Anthropic)** — primary coding assistant:
 - Component architecture, state management, and cross-tab data flow design
 - Financial model (IRR bisection, NPV, LCOE, MACRS depreciation, P90, PPA)
 - API integrations (EIA, NREL, FRED, Gemini, Mapbox)
 - UI/UX design system (Botanical Ledger — parchment palette, dark mode)
 - Security hardening (Gemini serverless proxy, CORS fixes, AI guardrails)
+
+**Google Stitch** — UI design:
+- Initial dashboard layout and component structure generation
+- Design direction for the four-tab interface
+- Informed the Botanical Ledger color palette and card layouts
 
 All implementation choices, assumptions, and code were reviewed and validated throughout development.
 
