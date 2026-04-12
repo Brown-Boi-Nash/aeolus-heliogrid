@@ -115,7 +115,7 @@ function getInitialTheme() {
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
   } catch {}
 
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return 'light'
 }
 
 export default function App() {
