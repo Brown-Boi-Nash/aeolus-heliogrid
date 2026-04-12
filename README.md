@@ -121,7 +121,7 @@ All implementation choices, assumptions, and code were reviewed and validated th
 
 ## Walkthrough Video
 
-📹 **[Watch the 5-minute demo](docs/walkthrough.md)** *(link TBD — add before deadline)*
+📹 **[Watch the 5-minute demo](https://youtu.be/T8r8LHYzpqM)**
 
 ---
 
@@ -140,6 +140,6 @@ All implementation choices, assumptions, and code were reviewed and validated th
 - [x] Planning document — `planning/PLANNING.md`
 - [x] Architecture overview — `docs/architecture.md`
 - [x] Reflection — `docs/reflection.md`
-- [ ] Walkthrough video link — `docs/walkthrough.md` *(record and add before deadline)*
+- [x] Walkthrough video link — `docs/walkthrough.md`
 - [x] Clean commit history
 - [x] No API keys committed

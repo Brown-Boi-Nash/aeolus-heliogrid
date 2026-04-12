@@ -2,7 +2,7 @@
 
 **Live Dashboard:** [https://aeolus-heliogrid.vercel.app](https://aeolus-heliogrid.vercel.app)
 
-**Video Link:** *(add Loom/YouTube link before submission deadline)*
+**Video Link:** [https://youtu.be/T8r8LHYzpqM](https://youtu.be/T8r8LHYzpqM)
 
 ---
 
