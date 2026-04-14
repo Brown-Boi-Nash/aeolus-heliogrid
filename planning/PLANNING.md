@@ -103,10 +103,3 @@ The name draws from Greek mythology to reflect the dual focus of the dashboard:
 2. Map state click → NREL PVWatts capacity factor + EIA state rate → pre-fills calculator + navigates to Tab 2
 
 ---
-
-## TODO (Post-Core Improvements)
-
-- Add a first-time user onboarding flow:
-  - Ask whether the visitor is a first-time user.
-  - If yes, launch a short guided tour across the 4 tabs (market, calculator, assistant, map).
-  - Include a skip button and "don't show again" preference persisted in local storage.
