@@ -366,9 +366,12 @@ export default function App() {
         role="contentinfo"
         aria-label="Data attribution"
       >
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 text-center">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 text-center space-y-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/40">
             Data: EIA Open Data API · NREL Developer API · Google Gemini AI · Mapbox · FRED
+          </p>
+          <p className="text-[11px] font-semibold text-on-surface/50">
+            Made with ❤️ by Nishan
           </p>
         </div>
       </footer>
