@@ -22,29 +22,29 @@ export default function LegendPanel({ energyType = 'solar' }) {
 
   return (
     <div
-      className="absolute bottom-8 left-4 z-10 bg-surface-container-lowest/90 backdrop-blur-sm rounded-xl p-4 shadow-botanical"
+      className="absolute bottom-4 left-2 md:bottom-8 md:left-4 z-10 bg-surface-container-lowest/90 backdrop-blur-sm rounded-xl p-2 md:p-4 shadow-botanical"
       role="img"
       aria-label={energyType === 'wind'
         ? 'Wind speed legend: colors range from light green (low) to dark green (high wind speed)'
         : 'Solar irradiance legend: colors range from light green (low) to dark green (high GHI)'}
     >
-      <p className="label-caps mb-3">
+      <p className="label-caps mb-1.5 md:mb-3">
         {energyType === 'wind' ? 'Wind Resource (100m)' : 'Solar Resource (GHI)'}
       </p>
-      <div className="flex flex-col gap-1.5" aria-hidden="true">
+      <div className="flex flex-col gap-1 md:gap-1.5" aria-hidden="true">
         {stops.map((s) => (
-          <div key={s.value} className="flex items-center gap-2.5">
+          <div key={s.value} className="flex items-center gap-1.5 md:gap-2.5">
             <span
-              className="w-4 h-4 rounded-sm flex-shrink-0"
+              className="w-3 h-3 md:w-4 md:h-4 rounded-sm flex-shrink-0"
               style={{ backgroundColor: s.color }}
             />
-            <span className="text-[10px] font-bold text-on-surface-variant tabular-nums">
-              {s.value} {energyType === 'wind' ? 'm/s' : 'kWh/m²/day'}
+            <span className="text-[9px] md:text-[10px] font-bold text-on-surface-variant tabular-nums">
+              {s.value} {energyType === 'wind' ? 'm/s' : 'kWh/m²/d'}
             </span>
           </div>
         ))}
       </div>
-      <p className="text-[11px] font-bold text-on-surface/40 uppercase tracking-widest mt-3">
+      <p className="text-[9px] md:text-[11px] font-bold text-on-surface/40 uppercase tracking-widest mt-2 md:mt-3">
         Source: {energyType === 'wind' ? 'Pre-bundled Wind Toolkit averages' : 'NREL NSRDB'}
       </p>
     </div>

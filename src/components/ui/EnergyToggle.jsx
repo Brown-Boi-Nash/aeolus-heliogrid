@@ -7,7 +7,7 @@ export default function EnergyToggle() {
 
   return (
     <div
-      className="hidden lg:flex items-center bg-surface-container-high rounded-xl p-1"
+      className="flex items-center bg-surface-container-high rounded-xl p-1"
       role="radiogroup"
       aria-label="Energy technology mode"
     >

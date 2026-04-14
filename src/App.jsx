@@ -341,6 +341,11 @@ export default function App() {
           ))}
         </Tab.List>
 
+        {/* Mobile Energy Toggle — below tab bar, hidden on desktop */}
+        <div className="md:hidden flex justify-center py-2 border-b border-on-surface/5 bg-surface-container-low">
+          <EnergyToggle />
+        </div>
+
         {/* Tab Content */}
         <Tab.Panels as="main" id="main-content" className="flex-1" aria-live="polite">
           {TABS.map((tab) => (

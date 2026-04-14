@@ -228,7 +228,7 @@ export default function ResearchAssistant() {
 
         {/* ── Context Sidebar ────────────────────────────────────────── */}
         <aside
-          className="lg:col-span-4 h-full min-h-0 bg-surface-container-high p-5 flex flex-col gap-6 overflow-y-auto scrollbar-botanical border-l border-on-surface/5"
+          className="hidden lg:flex lg:col-span-4 h-full min-h-0 bg-surface-container-high p-5 flex-col gap-6 overflow-y-auto scrollbar-botanical border-l border-on-surface/5"
           aria-label="Active data context and suggested questions"
         >
           {/* Live Context Feed */}
