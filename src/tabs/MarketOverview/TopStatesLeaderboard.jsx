@@ -11,6 +11,7 @@ import { useMemo } from 'react'
 import useDashboardStore from '../../store/dashboardStore'
 import { STATE_METADATA } from '../../constants/stateMetadata'
 import { STATE_POLICIES } from '../../constants/statePolicies'
+import MethodologyDrawer, { MethodRow } from '../../components/ui/MethodologyDrawer'
 
 // ── Scoring ────────────────────────────────────────────────────────────────────
 
@@ -241,6 +242,24 @@ export default function TopStatesLeaderboard({ statePrices, nationalPrice, onNav
           ))}
         </div>
       )}
+
+      <MethodologyDrawer title="How states are ranked">
+        <MethodRow label="Composite Score">
+          Each state is scored out of 100 using three weighted components: Resource Quality (40%), Electricity Rate (35%), and Policy Environment (25%). All components are normalized to 0–1 before weighting.
+        </MethodRow>
+        <MethodRow label="Resource Quality (40%)">
+          Solar mode uses pre-bundled GHI (global horizontal irradiance, kWh/m²/day) from NREL NSRDB. Wind mode uses average wind speed (m/s) at 100m. Both are min-max normalized across all 50 states so the best state always scores 100 and the worst scores 0.
+        </MethodRow>
+        <MethodRow label="Electricity Rate (35%)">
+          Live state retail electricity prices from the EIA API. Higher rate = higher score — a state with $0.25/kWh offers more revenue potential than one at $0.08/kWh for the same project output. States with no live EIA price are excluded.
+        </MethodRow>
+        <MethodRow label="Policy Environment (25%)">
+          Point tally based on DSIRE database: RPS mandate (+35), full net metering (+30), virtual net metering (+20), limited net metering (+12), property tax exemption (+20), sales tax exemption (+10), state tax credit (+5). Max 100 points.
+        </MethodRow>
+        <MethodRow label="Clicking a state">
+          Applies the state's live NREL PVWatts capacity factor and EIA electricity rate directly to the Project Economics calculator and navigates to Tab 2.
+        </MethodRow>
+      </MethodologyDrawer>
     </section>
   )
 }

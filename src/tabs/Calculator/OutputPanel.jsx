@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import clsx from 'clsx'
 import InfoHint from '../../components/ui/InfoHint'
+import MethodologyDrawer, { MethodRow } from '../../components/ui/MethodologyDrawer'
 import useDashboardStore from '../../store/dashboardStore'
 import { computeEsg, EMISSION_FACTORS, US_AVG_EMISSION } from '../../lib/esgCalc'
 
@@ -134,6 +135,34 @@ export default function OutputPanel({ results, inputs, p90Results }) {
         icon="schedule"
         status={pbStatus}
       />
+
+      {/* Methodology drawer */}
+      <MethodologyDrawer title="How these are calculated">
+        <MethodRow label="IRR — Internal Rate of Return">
+          Bisection solver finds the discount rate where NPV equals zero. Bounds: −50% to 500%, converges when |NPV| &lt; 0.000001. Returns null if cash flows never change sign (project always unprofitable).
+        </MethodRow>
+        <MethodRow label="NPV — Net Present Value">
+          Sum of each year's cash flow divided by (1 + discount rate)^year. Year 0 is the equity outlay after debt and ITC. Discount rate is configurable (default 8%).
+        </MethodRow>
+        <MethodRow label="LCOE — Levelized Cost of Energy">
+          Discounted lifetime costs (capex + O&M + debt service) divided by discounted lifetime energy production. Accounts for annual degradation. Lower is better — grid parity is roughly $0.033–$0.068/kWh.
+        </MethodRow>
+        <MethodRow label="Payback Period">
+          First year where cumulative post-equity cash flows recover the Year 0 equity outlay. Fractional year is interpolated linearly.
+        </MethodRow>
+        <MethodRow label="MACRS Depreciation">
+          IRS 5-year schedule (20%, 32%, 19.2%, 11.52%, 11.52%, 5.76%). Depreciable basis is reduced by 50% of the ITC claimed per §168(k). Tax shield is added back as a positive cash flow each year.
+        </MethodRow>
+        <MethodRow label="P90 Downside IRR">
+          Re-runs the full model with capacity factor × 0.90 — the NREL convention for a 90th-percentile conservative resource estimate.
+        </MethodRow>
+        <MethodRow label="Scenario Multipliers">
+          Optimistic: capacity factor ×1.1, electricity rate ×1.1, install cost ×0.9. Conservative: ×0.9, ×0.9, ×1.1. Applied before every calculation.
+        </MethodRow>
+        <MethodRow label="PPA Mode">
+          Replaces the retail electricity rate with 75% of retail — the standard utility-scale power purchase agreement rate.
+        </MethodRow>
+      </MethodologyDrawer>
 
       {/* ESG Impact — derived from project inputs + EPA eGRID emission factors */}
       <div
