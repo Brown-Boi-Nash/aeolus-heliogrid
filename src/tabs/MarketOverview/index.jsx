@@ -117,7 +117,7 @@ export default function MarketOverview({ onNavigate, theme = 'light' }) {
         <div>
           <h1
             id="market-overview-heading"
-            className="text-4xl font-extrabold text-on-surface tracking-tight"
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-on-surface tracking-tight"
           >
             Market Overview
           </h1>

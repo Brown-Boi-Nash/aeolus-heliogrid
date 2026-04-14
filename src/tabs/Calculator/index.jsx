@@ -150,7 +150,7 @@ export default function Calculator({ onNavigate }) {
         <div>
           <h1
             id="calculator-heading"
-            className="text-4xl font-extrabold text-on-surface tracking-tight"
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-on-surface tracking-tight"
           >
             Project Economics
           </h1>
@@ -252,7 +252,7 @@ export default function Calculator({ onNavigate }) {
         <div className="lg:col-span-4">
           <OutputPanel results={results} inputs={inputs} p90Results={p90Results} />
         </div>
-        <div className="lg:col-span-8 min-h-[520px]">
+        <div className="lg:col-span-8 min-h-[300px] md:min-h-[520px]">
           <CashFlowSection
             cashFlows={results.cashFlows}
             projectLifeYears={inputs.projectLifeYears}

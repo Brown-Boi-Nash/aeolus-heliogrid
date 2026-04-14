@@ -28,7 +28,7 @@ export default function GeographicMap({ onNavigate, theme = 'light' }) {
         <div>
           <h1
             id="map-heading"
-            className="text-4xl font-extrabold text-on-surface tracking-tight"
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-on-surface tracking-tight"
           >
             Geographic Map
           </h1>

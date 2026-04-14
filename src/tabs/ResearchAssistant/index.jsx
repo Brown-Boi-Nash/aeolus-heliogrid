@@ -103,7 +103,7 @@ export default function ResearchAssistant() {
   const isEmpty = chatMessages.length === 0
 
   return (
-    <div className="animate-fade-in h-[70vh] min-h-[520px] md:h-[calc(100vh-220px)]">
+    <div className="animate-fade-in h-[60vh] min-h-[400px] md:h-[70vh] lg:h-[calc(100vh-220px)]">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full min-h-0 rounded-xl overflow-hidden shadow-botanical">
 
         {/* ── Chat Area ─────────────────────────────────────────────── */}

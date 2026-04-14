@@ -112,7 +112,7 @@ export default function SensitivityHeatmap({ inputs }) {
       </div>
 
       <div className="overflow-x-auto scrollbar-botanical">
-        <table className="w-full min-w-[560px]" aria-label="IRR sensitivity heatmap table">
+        <table className="w-full min-w-[320px]" aria-label="IRR sensitivity heatmap table">
           <thead>
             <tr>
               <th className="text-left px-2 py-2 label-caps">Rate \ Cost</th>

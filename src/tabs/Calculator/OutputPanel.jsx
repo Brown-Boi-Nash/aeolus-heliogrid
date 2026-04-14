@@ -35,7 +35,7 @@ function KpiCard({ label, info, value, unit, sub, sub2, icon, status }) {
         )}
       </div>
       <p
-        className={clsx('text-4xl font-black tracking-tight mt-3 tabular-nums', statusColor)}
+        className={clsx('text-2xl sm:text-4xl font-black tracking-tight mt-3 tabular-nums', statusColor)}
         aria-live="polite"
       >
         {value ?? '—'}

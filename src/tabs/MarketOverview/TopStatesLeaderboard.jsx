@@ -230,7 +230,7 @@ export default function TopStatesLeaderboard({ statePrices, nationalPrice, onNav
           Loading state data…
         </div>
       ) : (
-        <div className="flex gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {topStates.map((state, i) => (
             <StateCard
               key={state.abbr}

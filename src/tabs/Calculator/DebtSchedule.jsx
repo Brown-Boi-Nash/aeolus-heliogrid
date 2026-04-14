@@ -93,7 +93,7 @@ export default function DebtSchedule({ inputs }) {
       {!collapsed && (
         <div id="debt-schedule-body" className="px-6 pb-6 overflow-x-auto scrollbar-botanical">
           <table
-            className="w-full min-w-[560px] text-xs"
+            className="w-full min-w-[420px] text-xs"
             aria-label="Debt amortization schedule"
           >
             <thead>

@@ -125,7 +125,7 @@ export default function InputPanel({ selectedStateAbbr, energyType = 'solar' }) 
         <legend className="label-caps text-primary border-b border-on-surface/5 pb-1 w-full block mb-4">
           Project Parameters
         </legend>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2 items-end">
           <InputField
             id="systemSizeKW" label="System Size"
             info="Nameplate project capacity used for production and capex sizing."
