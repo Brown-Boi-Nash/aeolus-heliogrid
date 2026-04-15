@@ -1,4 +1,4 @@
-const NREL_BASE = 'https://developer.nrel.gov/api'
+const NREL_BASE = 'https://developer.nlr.gov/api'
 const API_KEY = import.meta.env.VITE_NREL_API_KEY
 
 // Fetch PVWatts capacity factor for a given lat/lon (1 kW reference system)
