@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import InfoHint from '../../components/ui/InfoHint'
 import useDashboardStore from '../../store/dashboardStore'
 import { computeEsg, EMISSION_FACTORS, US_AVG_EMISSION } from '../../lib/esgCalc'
+import MethodologyModal from './MethodologyModal'
 
 function KpiCard({ label, info, value, unit, sub, sub2, icon, status }) {
   // status: 'good' | 'warn' | 'bad' | 'neutral'
@@ -55,6 +56,7 @@ function KpiCard({ label, info, value, unit, sub, sub2, icon, status }) {
 
 export default function OutputPanel({ results, inputs, p90Results }) {
   const selectedState = useDashboardStore((s) => s.selectedState)
+  const [showMethodology, setShowMethodology] = useState(false)
   const { irr, npv, payback, lcoe } = results
 
   const p90Irr    = p90Results?.irr
@@ -82,6 +84,29 @@ export default function OutputPanel({ results, inputs, p90Results }) {
       className="flex flex-col gap-4"
       aria-label="Calculated financial outputs"
     >
+      {showMethodology && <MethodologyModal onClose={() => setShowMethodology(false)} />}
+
+      <div className="flex items-center justify-between">
+        <h2 className="text-xs font-extrabold uppercase tracking-widest text-on-surface-variant">
+          Project Results
+        </h2>
+        <button
+          type="button"
+          onClick={() => setShowMethodology(true)}
+          className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-on-surface/40 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1"
+          aria-label="View calculation methodology"
+        >
+          <span
+            className="material-symbols-outlined text-sm"
+            aria-hidden="true"
+            style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+          >
+            info
+          </span>
+          How it's calculated
+        </button>
+      </div>
+
       {irr === null && (
         <div
           role="alert"
